@@ -1,26 +1,188 @@
 @import "tailwindcss";
 
+@source "./**/*.{ts,tsx}";
+@source "../components/**/*.{ts,tsx}";
+@source "../hooks/**/*.{ts,tsx}";
+@source "../lib/**/*.{ts,tsx}";
+@source "../providers/**/*.{ts,tsx}";
+@source "../store/**/*.{ts,tsx}";
+@source "../types/**/*.{ts,tsx}";
+
+/* Fallback: ensure spacing variable is always defined in runtime CSS */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --spacing: 0.25rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@theme {
+  /* Spacing Base (restores p-1, m-4, gap-10, etc.) */
+  --spacing: 0.25rem;
+
+  /* Fonts */
+  --font-inter: var(--font-inter, ui-sans-serif, system-ui);
+  --font-outfit: var(--font-outfit, ui-sans-serif, system-ui);
+
+  /* Colors */
+  --color-gold: #f59e0b;
+  --color-gold-light: #fcd34d;
+  --color-gold-dark: #b45309;
+  --color-bg: #080810;
+  --color-surface: #0f0f1a;
+  --color-surface-2: #1a1a2e;
+  --color-border: rgba(245, 158, 11, 0.2);
+
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  background: #080810;
+  color: #fff;
+  min-height: 100vh;
+}
+
+/* ── Scrollbar personnalisée ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0f0f1a; }
+::-webkit-scrollbar-thumb { background: #f59e0b44; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #f59e0b88; }
+
+/* ── Gradient de fond animé ── */
+.bg-animated {
+  background: linear-gradient(135deg, #080810 0%, #0f0f1a 50%, #1a0a00 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@utility text-gold-gradient {
+  background: linear-gradient(135deg, #f59e0b, #fcd34d, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+@utility glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  border-radius: 16px;
+}
+
+@utility glass-hover {
+  transition: all 0.3s ease;
+  &:hover {
+    background: rgba(245, 158, 11, 0.06);
+    border-color: rgba(245, 158, 11, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(245, 158, 11, 0.15);
+  }
+}
+
+@utility btn-gold {
+  background: linear-gradient(135deg, #f59e0b, #b45309);
+  color: #000;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 12px 24px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-outfit);
+  letter-spacing: 0.02em;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(245, 158, 11, 0.4);
+    filter: brightness(1.1);
+  }
+  &:active { transform: translateY(0); }
+}
+
+@utility btn-outline-gold {
+  background: transparent;
+  color: #f59e0b;
+  border: 1.5px solid #f59e0b;
+  border-radius: 12px;
+  padding: 11px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(245, 158, 11, 0.1);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+  }
+}
+
+@utility live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: livePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+  50% { opacity: 0.8; transform: scale(1.1); box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+}
+
+@utility input-gold {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: 10px;
+  color: #fff;
+  padding: 12px 16px;
+  width: 100%;
+  transition: border-color 0.2s;
+  font-family: var(--font-inter);
+
+  &::placeholder { color: rgba(255,255,255,0.3); }
+  &:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245,158,11,0.15);
+  }
+}
+
+@utility gradient-border {
+  position: relative;
+  border-radius: 16px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 17px;
+    background: linear-gradient(135deg, #f59e0b, transparent, #f59e0b33);
+    z-index: -1;
+  }
 }
