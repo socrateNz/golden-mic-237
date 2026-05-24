@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
 import { useCandidates } from '@/hooks/useCandidates';
 import CandidateCard from '@/components/candidates/CandidateCard';
+import LoadingButton from '@/components/LoadingButton';
 import { CAMEROON_REGIONS } from '@/types';
 import { s } from '@/lib/spacing';
 
@@ -96,22 +97,25 @@ export default function CandidatesPage() {
 
             {data.meta.totalPages > 1 && (
               <div className="flex justify-center" style={{ gap: s(3), marginTop: s(10) }}>
-                <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
-                  className="btn-outline-gold text-sm disabled:opacity-30"
-                  style={{ paddingLeft: s(5), paddingRight: s(5), paddingTop: s(2.5), paddingBottom: s(2.5) }}
+                <LoadingButton
+                  variant="outline-gold"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
                 >
                   ← Précédent
-                </button>
+                </LoadingButton>
                 <span className="flex items-center text-sm text-white/50" style={{ paddingLeft: s(5), paddingRight: s(5) }}>
                   Page {page} / {data.meta.totalPages}
                 </span>
-                <button onClick={() => setPage((p) => Math.min(data.meta.totalPages, p + 1))}
+                <LoadingButton
+                  variant="outline-gold"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.min(data.meta.totalPages, p + 1))}
                   disabled={page === data.meta.totalPages}
-                  className="btn-outline-gold text-sm disabled:opacity-30"
-                  style={{ paddingLeft: s(5), paddingRight: s(5), paddingTop: s(2.5), paddingBottom: s(2.5) }}
                 >
                   Suivant →
-                </button>
+                </LoadingButton>
               </div>
             )}
           </>

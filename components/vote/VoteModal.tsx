@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, CreditCard, Smartphone, Loader2, CheckCircle2 } from 'lucide-react';
+import { X, CreditCard, Smartphone, CheckCircle2, Loader2 } from 'lucide-react';
 import { useInitiateVote } from '@/hooks/useVote';
 import { VOTE_AMOUNTS, type Candidate, type VoteInitiateResponse } from '@/types';
 import { formatFCFA } from '@/lib/utils';
 import { toast } from 'sonner';
 import { s } from '@/lib/spacing';
+import LoadingButton from '@/components/LoadingButton';
 
 interface VoteModalProps {
   candidate: Candidate;
@@ -20,6 +21,7 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
   const [customAmount, setCustomAmount] = useState('');
   const [paymentData, setPaymentData] = useState<VoteInitiateResponse | null>(null);
   const [hasLaunchedUssd, setHasLaunchedUssd] = useState(false);
+  const [paymentFrameLoaded, setPaymentFrameLoaded] = useState(false);
 
   const { mutate: initiateVote, isPending } = useInitiateVote();
 
@@ -28,6 +30,10 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
   const inputStyle: React.CSSProperties = { padding: `${s(3)} ${s(4)}`, borderRadius: s(2.5) };
   const paymentUrl = paymentData?.paymentUrl ?? paymentData?.checkoutUrl ?? null;
   const currentStep = paymentData ? 2 : 1;
+
+  useEffect(() => {
+    if (paymentUrl) setPaymentFrameLoaded(false);
+  }, [paymentUrl]);
 
   const tryLaunchUssdOnce = (message?: string | null) => {
     if (!message || hasLaunchedUssd) return;
@@ -61,6 +67,7 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
   const closeAll = () => {
     setPaymentData(null);
     setHasLaunchedUssd(false);
+    setPaymentFrameLoaded(false);
     onClose();
   };
 
@@ -196,24 +203,16 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                   </div>
 
                   {/* Submit */}
-                  <button
+                  <LoadingButton
                     type="submit"
-                    disabled={isPending || !effectiveAmount || effectiveAmount < 100}
-                    className="btn-gold w-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ gap: s(2) }}
+                    isLoading={isPending}
+                    loadingText="Initialisation du paiement..."
+                    disabled={!effectiveAmount || effectiveAmount < 100}
+                    className="w-full"
                   >
-                    {isPending ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Initialisation du paiement...
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle2 className="w-5 h-5" />
-                        Continuer vers paiement {effectiveAmount ? formatFCFA(effectiveAmount) : ''}
-                      </>
-                    )}
-                  </button>
+                    <CheckCircle2 className="w-5 h-5" />
+                    Continuer vers paiement {effectiveAmount ? formatFCFA(effectiveAmount) : ''}
+                  </LoadingButton>
                 </>
               )}
 
@@ -231,11 +230,32 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                   </div>
 
                   {paymentUrl ? (
-                    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.08)', height: '360px' }}>
+                    <div
+                      className="relative rounded-xl overflow-hidden"
+                      style={{
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        height: '360px',
+                        background: 'linear-gradient(180deg, #14141f 0%, #0a0a10 100%)',
+                      }}
+                    >
+                      {!paymentFrameLoaded && (
+                        <div
+                          className="absolute inset-0 z-10 flex flex-col items-center justify-center"
+                          style={{ gap: s(3), background: 'rgba(10,10,16,0.92)' }}
+                          aria-busy
+                          aria-live="polite"
+                        >
+                          <Loader2 className="w-10 h-10 text-amber-400 animate-spin" aria-hidden />
+                          <p className="text-sm font-medium text-white/75">Chargement de la page de paiement…</p>
+                          <p className="text-xs text-white/40">NotchPay peut prendre quelques secondes</p>
+                        </div>
+                      )}
                       <iframe
                         src={paymentUrl}
                         title="Paiement NotchPay"
-                        className="w-full h-full"
+                        className="w-full h-full border-0 bg-transparent transition-opacity duration-300"
+                        style={{ opacity: paymentFrameLoaded ? 1 : 0 }}
+                        onLoad={() => setPaymentFrameLoaded(true)}
                       />
                     </div>
                   ) : (
@@ -243,14 +263,16 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                   )}
 
                   <div style={{ display: 'flex', gap: s(2), flexDirection: 'column' }}>
-                    <button
+                    <LoadingButton
                       type="button"
-                      onClick={() => setPaymentData(null)}
-                      className="btn-outline-gold text-center"
-                      style={{ paddingTop: s(3), paddingBottom: s(3) }}
+                      variant="outline-gold"
+                      onClick={() => {
+                        setPaymentData(null);
+                        setPaymentFrameLoaded(false);
+                      }}
                     >
                       Modifier le montant
-                    </button>
+                    </LoadingButton>
                   </div>
                 </>
               )}

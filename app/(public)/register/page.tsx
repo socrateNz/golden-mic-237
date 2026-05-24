@@ -6,8 +6,9 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { CAMEROON_REGIONS, type Category } from '@/types';
 import { toast } from 'sonner';
-import { Loader2, CheckCircle2, Upload } from 'lucide-react';
+import { CheckCircle2, Upload } from 'lucide-react';
 import { s } from '@/lib/spacing';
+import LoadingButton from '@/components/LoadingButton';
 
 export default function RegisterPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -178,16 +179,15 @@ export default function RegisterPage() {
             </div>
 
             {/* Submit */}
-            <button
+            <LoadingButton
               type="submit"
-              disabled={isPending}
-              className="btn-gold w-full text-lg flex items-center justify-center disabled:opacity-50"
-              style={{ paddingTop: s(4), paddingBottom: s(4), gap: s(2) }}
+              isLoading={isPending}
+              loadingText="Envoi en cours..."
+              size="lg"
+              className="w-full"
             >
-              {isPending
-                ? <><Loader2 className="w-5 h-5 animate-spin" /> Envoi en cours...</>
-                : '🎤 Soumettre ma candidature'}
-            </button>
+              🎤 Soumettre ma candidature
+            </LoadingButton>
             <p className="text-center text-xs text-white/30">
               En soumettant, vous acceptez les conditions de participation à Golden Mic 237.
             </p>

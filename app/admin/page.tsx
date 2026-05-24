@@ -9,6 +9,7 @@ import { CheckCircle2, XCircle, PauseCircle, Users, TrendingUp, DollarSign, Aler
 import { formatPoints, formatFCFA } from '@/lib/utils';
 import { toast } from 'sonner';
 import { s } from '@/lib/spacing';
+import LoadingButton from '@/components/LoadingButton';
 
 export default function AdminDashboardPage() {
   const { adminToken, isAdmin, setAdminToken: storeToken, logout } = useAdminStore();
@@ -84,9 +85,13 @@ export default function AdminDashboardPage() {
               style={adminInputStyle}
               required
             />
-            <button type="submit" className="btn-gold w-full" style={{ paddingTop: s(3), paddingBottom: s(3) }}>
+            <LoadingButton
+              type="submit"
+              size="md"
+              className="w-full"
+            >
               Accéder
-            </button>
+            </LoadingButton>
           </form>
         </motion.div>
       </div>
