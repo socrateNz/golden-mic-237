@@ -22,9 +22,9 @@ export default function HomePage() {
       >
         {/* Animated Background Elements */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full opacity-20 blur-[120px] animate-pulse"
+          <div className="absolute top-1/4 left-1/4 w-125 h-125 rounded-full opacity-20 blur-[120px] animate-pulse"
             style={{ background: 'radial-gradient(circle, #f59e0b, transparent)' }} />
-          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full opacity-10 blur-[120px]"
+          <div className="absolute bottom-1/4 right-1/4 w-125 h-125 rounded-full opacity-10 blur-[120px]"
             style={{ background: 'radial-gradient(circle, #7c3aed, transparent)' }} />
         </div>
 
