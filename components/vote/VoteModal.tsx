@@ -9,6 +9,7 @@ import { formatFCFA } from '@/lib/utils';
 import { toast } from 'sonner';
 import { s } from '@/lib/spacing';
 import LoadingButton from '@/components/LoadingButton';
+import { useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { detectPaymentMethod } from '@/lib/notchpay';
 
@@ -34,6 +35,8 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
     const { channel } = detectPaymentMethod(voterPhone);
     setOperator(channel);
   }, [voterPhone]);
+
+  const queryClient = useQueryClient();
 
   const { mutate: initiateVote, isPending } = useInitiateVote();
 
@@ -77,6 +80,12 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
         if (data.data?.status === 'complete') {
           setPaymentStatus('complete');
           setStatusCheckTimeout(null);
+          
+          // Rafraîchir les points du candidat et le classement
+          queryClient.invalidateQueries({ queryKey: ['candidates'] });
+          queryClient.invalidateQueries({ queryKey: ['candidate', candidate.id] });
+          queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+          
           toast.success('Paiement confirmé! Vos points ont été attribués.');
 
           // Fermer le modal après 2 secondes
