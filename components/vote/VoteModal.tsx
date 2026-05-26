@@ -62,22 +62,25 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
     if (paymentUrl) setPaymentFrameLoaded(false);
   }, [paymentUrl]);
 
-  const startStatusChecking = (reference: string) => {
+  const startStatusChecking = (payment: VoteInitiateResponse) => {
     let checkCount = 0;
     const maxChecks = 75; // 5 minutes avec 4s intervalle
+
+    console.log(payment);
+
 
     const checkStatus = async () => {
       try {
         checkCount++;
-        const { data } = await api.get(`/api/payments/check-status?reference=${reference}`);
+        const { data } = await api.get(`/api/payments/check-status?reference=${payment.reference}`);
 
         if (data.data?.status === 'complete') {
           setPaymentStatus('complete');
           setStatusCheckTimeout(null);
           toast.success('Paiement confirmé! Vos points ont été attribués.');
-          
+
           // Fermer le modal après 2 secondes
-          setTimeout(() => closeAll(), 2000);
+          setTimeout(() => closeAll(), 5000);
         } else if (data.data?.status === 'failed' || data.data?.status === 'cancelled') {
           setPaymentStatus('failed');
           setStatusCheckTimeout(null);
@@ -130,7 +133,7 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
         onSuccess: (data) => {
           setPaymentData(data);
           setPaymentStatus('checking');
-          startStatusChecking(data.reference);
+          startStatusChecking(data);
         },
         onError: (err) => toast.error(err.message ?? 'Erreur lors du vote'),
       }
@@ -446,7 +449,7 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                             Saisissez votre code PIN pour valider le paiement.
                           </strong>
                         </p>
-                        
+
                         <div className="mt-4 p-3 rounded-lg text-[11px] text-left space-y-1" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
                           <span className="font-bold text-amber-400 block mb-1">💡 Pas de notification ?</span>
                           {operator === 'cm.mtn' ? (
