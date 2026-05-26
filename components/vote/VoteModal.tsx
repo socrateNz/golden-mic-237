@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, CreditCard, Smartphone, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, CreditCard, Smartphone, CheckCircle2, AlertCircle, XCircle } from 'lucide-react';
 import { useInitiateVote } from '@/hooks/useVote';
 import { VOTE_AMOUNTS, type Candidate, type VoteInitiateResponse } from '@/types';
 import { formatFCFA } from '@/lib/utils';
@@ -524,7 +524,19 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                   )}
 
                   {paymentStatus === 'failed' && (
-                    <div style={{ display: 'flex', gap: s(2), flexDirection: 'column' }}>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="rounded-xl text-center flex flex-col gap-3"
+                      style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', padding: s(4), marginBottom: s(4) }}
+                    >
+                      <XCircle className="w-8 h-8 text-red-500 mx-auto" />
+                      <div>
+                        <p className="text-white text-sm font-bold">Échec du paiement</p>
+                        <p className="text-white/60 text-xs mt-1">
+                          Votre transaction n'a pas pu être finalisée. Veuillez vérifier votre solde ou essayer un autre moyen de paiement.
+                        </p>
+                      </div>
                       <LoadingButton
                         type="button"
                         onClick={() => {
@@ -532,10 +544,11 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                           setPaymentFrameLoaded(false);
                           setPaymentStatus('pending');
                         }}
+                        style={{ marginTop: s(2), background: 'linear-gradient(135deg, #ef4444, #b91c1c)', color: '#fff' }}
                       >
                         Réessayer
                       </LoadingButton>
-                    </div>
+                    </motion.div>
                   )}
 
                   {paymentStatus !== 'failed' && paymentStatus !== 'complete' && (
