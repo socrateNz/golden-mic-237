@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { s } from '@/lib/spacing';
 import LoadingButton from '@/components/LoadingButton';
 import { api } from '@/lib/api';
+import { detectPaymentMethod } from '@/lib/notchpay';
 
 interface VoteModalProps {
   candidate: Candidate;
@@ -24,10 +25,15 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
   const [voterEmail, setVoterEmail] = useState('');
   const [voterPhone, setVoterPhone] = useState('');
   const [paymentData, setPaymentData] = useState<VoteInitiateResponse | null>(null);
-  const [hasLaunchedUssd, setHasLaunchedUssd] = useState(false);
   const [paymentFrameLoaded, setPaymentFrameLoaded] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'checking' | 'complete' | 'failed'>('pending');
   const [statusCheckTimeout, setStatusCheckTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [operator, setOperator] = useState<'cm.mtn' | 'cm.orange' | null>(null);
+
+  useEffect(() => {
+    const { channel } = detectPaymentMethod(voterPhone);
+    setOperator(channel);
+  }, [voterPhone]);
 
   const { mutate: initiateVote, isPending } = useInitiateVote();
 
@@ -58,7 +64,7 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
 
   const startStatusChecking = (reference: string) => {
     let checkCount = 0;
-    const maxChecks = 60; // 2 minutes avec 2s intervalle
+    const maxChecks = 75; // 5 minutes avec 4s intervalle
 
     const checkStatus = async () => {
       try {
@@ -77,19 +83,19 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
           setStatusCheckTimeout(null);
           toast.error(`Paiement ${data.data.status}`);
         } else if (checkCount >= maxChecks) {
-          // Timeout après 2 minutes
+          // Timeout après 5 minutes
           setStatusCheckTimeout(null);
           toast.info('Vérification du paiement terminée. Contactez le support si vous avez des questions.');
         } else {
-          // Planifier la prochaine vérification
-          const timeout = setTimeout(checkStatus, 2000);
+          // Planifier la prochaine vérification toutes les 4s
+          const timeout = setTimeout(checkStatus, 4000);
           setStatusCheckTimeout(timeout);
         }
       } catch (err) {
         console.error('Erreur vérification statut:', err);
         // Planifier la prochaine tentative même en cas d'erreur de réseau, sauf si max de tentatives atteint
         if (checkCount < maxChecks) {
-          const timeout = setTimeout(checkStatus, 2000);
+          const timeout = setTimeout(checkStatus, 4000);
           setStatusCheckTimeout(timeout);
         } else {
           setStatusCheckTimeout(null);
@@ -99,14 +105,6 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
 
     // Check immédiatement
     checkStatus();
-  };
-
-  const tryLaunchUssdOnce = (message?: string | null) => {
-    if (!message || hasLaunchedUssd) return;
-    const match = message.match(/(\*[0-9*#]+#)/);
-    if (!match?.[1]) return;
-    setHasLaunchedUssd(true);
-    window.location.href = `tel:${encodeURIComponent(match[1])}`;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -132,7 +130,6 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
         onSuccess: (data) => {
           setPaymentData(data);
           setPaymentStatus('checking');
-          tryLaunchUssdOnce(data.ussdMessage);
           startStatusChecking(data.reference);
         },
         onError: (err) => toast.error(err.message ?? 'Erreur lors du vote'),
@@ -142,7 +139,6 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
 
   const closeAll = () => {
     setPaymentData(null);
-    setHasLaunchedUssd(false);
     setPaymentFrameLoaded(false);
     setPaymentStatus('pending');
     setVoterName('');
@@ -177,8 +173,16 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
             className="relative w-full max-w-md rounded-2xl overflow-hidden"
             style={{
               background: 'linear-gradient(135deg, #0f0f1a 0%, #1a0e00 100%)',
-              border: '1px solid rgba(245,158,11,0.3)',
-              boxShadow: '0 25px 80px rgba(0,0,0,0.6), 0 0 60px rgba(245,158,11,0.1)',
+              border: operator === 'cm.mtn'
+                ? '1px solid rgba(234, 179, 8, 0.4)'
+                : operator === 'cm.orange'
+                  ? '1px solid rgba(249, 115, 22, 0.4)'
+                  : '1px solid rgba(245, 158, 11, 0.3)',
+              boxShadow: operator === 'cm.mtn'
+                ? '0 25px 80px rgba(0,0,0,0.8), 0 0 60px rgba(234, 179, 8, 0.15)'
+                : operator === 'cm.orange'
+                  ? '0 25px 80px rgba(0,0,0,0.8), 0 0 60px rgba(249, 115, 22, 0.15)'
+                  : '0 25px 80px rgba(0,0,0,0.6), 0 0 60px rgba(245, 158, 11, 0.1)',
             }}
           >
             {/* Header */}
@@ -205,8 +209,15 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                 </div>
                 <div className="w-full rounded-full bg-white/10" style={{ marginTop: s(2), height: '4px' }}>
                   <div
-                    className="h-full rounded-full bg-amber-400 transition-all duration-300"
-                    style={{ width: currentStep === 1 ? '50%' : '100%' }}
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{
+                      width: currentStep === 1 ? '50%' : '100%',
+                      background: operator === 'cm.mtn'
+                        ? '#eab308'
+                        : operator === 'cm.orange'
+                          ? '#f97316'
+                          : '#f59e0b',
+                    }}
                   />
                 </div>
               </div>
@@ -217,16 +228,45 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                 <>
                   {/* Infos du voteur */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: s(2) }}>
-                    <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider">
-                      Votre numéro de téléphone *
-                    </label>
+                    <div className="flex justify-between items-center">
+                      <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider">
+                        Votre numéro de téléphone *
+                      </label>
+                      {operator === 'cm.mtn' && (
+                        <motion.span
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="text-[10px] font-black px-2 py-0.5 bg-yellow-400 text-black rounded-md flex items-center gap-1 shadow-md"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-black animate-ping"></span>
+                          MTN MoMo
+                        </motion.span>
+                      )}
+                      {operator === 'cm.orange' && (
+                        <motion.span
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="text-[10px] font-black px-2 py-0.5 bg-orange-500 text-white rounded-md flex items-center gap-1 shadow-md"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                          Orange Money
+                        </motion.span>
+                      )}
+                    </div>
                     <input
                       type="tel"
                       placeholder="Ex: 237 6XXXXXXXX"
                       value={voterPhone}
                       onChange={(e) => setVoterPhone(e.target.value)}
                       className="input-gold"
-                      style={inputStyle}
+                      style={{
+                        ...inputStyle,
+                        borderColor: operator === 'cm.mtn'
+                          ? 'rgba(234, 179, 8, 0.4)'
+                          : operator === 'cm.orange'
+                            ? 'rgba(249, 115, 22, 0.4)'
+                            : undefined,
+                      }}
                       required
                     />
                   </div>
@@ -309,6 +349,13 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                     loadingText="Initialisation du paiement..."
                     disabled={!effectiveAmount || effectiveAmount < 100 || !voterPhone}
                     className="w-full"
+                    style={
+                      operator === 'cm.mtn'
+                        ? { background: 'linear-gradient(135deg, #facc15, #ca8a04)', color: '#000' }
+                        : operator === 'cm.orange'
+                          ? { background: 'linear-gradient(135deg, #f97316, #ea580c)', color: '#fff' }
+                          : undefined
+                    }
                   >
                     <CheckCircle2 className="w-5 h-5" />
                     Continuer vers paiement {effectiveAmount ? formatFCFA(effectiveAmount) : ''}
@@ -333,18 +380,96 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="rounded-xl text-center"
-                      style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', padding: s(4) }}
+                      className="rounded-xl text-center flex flex-col items-center justify-center gap-4"
+                      style={{
+                        background: operator === 'cm.mtn'
+                          ? 'rgba(234,179,8,0.06)'
+                          : operator === 'cm.orange'
+                            ? 'rgba(249,115,22,0.06)'
+                            : 'rgba(59,130,246,0.06)',
+                        border: operator === 'cm.mtn'
+                          ? '1px solid rgba(234,179,8,0.2)'
+                          : operator === 'cm.orange'
+                            ? '1px solid rgba(249,115,22,0.2)'
+                            : '1px solid rgba(59,130,246,0.2)',
+                        padding: s(6)
+                      }}
                     >
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                        style={{ display: 'inline-block' }}
-                      >
-                        <AlertCircle className="w-8 h-8 text-blue-400" />
-                      </motion.div>
-                      <p className="text-white text-sm font-medium" style={{ marginTop: s(2) }}>Vérification du paiement en cours...</p>
-                      <p className="text-white/50 text-xs" style={{ marginTop: s(1) }}>Veuillez patienter</p>
+                      {/* Pulse Circle Animation */}
+                      <div className="relative flex items-center justify-center w-16 h-16">
+                        <motion.div
+                          animate={{
+                            scale: [1, 1.4, 1],
+                            opacity: [0.6, 0.1, 0.6],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                          className="absolute inset-0 rounded-full"
+                          style={{
+                            background: operator === 'cm.mtn'
+                              ? '#eab308'
+                              : operator === 'cm.orange'
+                                ? '#f97316'
+                                : '#3b82f6'
+                          }}
+                        />
+                        <div
+                          className="relative z-10 w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                          style={{
+                            background: operator === 'cm.mtn'
+                              ? '#eab308'
+                              : operator === 'cm.orange'
+                                ? '#f97316'
+                                : '#3b82f6'
+                          }}
+                        >
+                          <Smartphone className={`w-6 h-6 ${operator === 'cm.mtn' ? 'text-black' : 'text-white'}`} />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <h3 className="text-white font-bold text-base" style={{ fontFamily: 'var(--font-outfit)' }}>
+                          {operator === 'cm.mtn' && "Attente de confirmation MTN MoMo"}
+                          {operator === 'cm.orange' && "Attente de confirmation Orange Money"}
+                          {!operator && "Vérification du paiement..."}
+                        </h3>
+                        <p className="text-xs text-white/50">Instruction Push USSD envoyée</p>
+                      </div>
+
+                      <div className="text-xs leading-relaxed text-white/80 max-w-xs space-y-2 border-t border-white/5 pt-4">
+                        <p>
+                          Un popup sécurisé vient de s'afficher sur votre téléphone.
+                          <strong className="text-white block mt-1 font-semibold">
+                            Saisissez votre code PIN pour valider le paiement.
+                          </strong>
+                        </p>
+                        
+                        <div className="mt-4 p-3 rounded-lg text-[11px] text-left space-y-1" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <span className="font-bold text-amber-400 block mb-1">💡 Pas de notification ?</span>
+                          {operator === 'cm.mtn' ? (
+                            <p>Veuillez composer le <span className="font-black text-white text-xs select-all">#150*50#</span> sur votre téléphone pour approuver la transaction manuellement.</p>
+                          ) : operator === 'cm.orange' ? (
+                            <p>Veuillez composer le <span className="font-black text-white text-xs select-all">#150#</span> ou consulter votre application Orange Money pour valider la transaction en attente.</p>
+                          ) : (
+                            <p>Veuillez vérifier votre téléphone ou utiliser le lien ci-dessous pour payer sur le portail sécurisé.</p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Fallback button if user wants to use checkout URL in separate window */}
+                      {paymentUrl && (
+                        <a
+                          href={paymentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-2 text-[10px] text-white/40 hover:text-amber-400 transition-colors underline"
+                        >
+                          Ouvrir la page de paiement classique dans un nouvel onglet
+                        </a>
+                      )}
                     </motion.div>
                   )}
 
