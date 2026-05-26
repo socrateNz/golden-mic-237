@@ -101,8 +101,8 @@ export default function AdminDashboardPage() {
   const stats = analytics?.summary;
 
   return (
-    <div className="min-h-screen" style={{ background: '#050508', paddingTop: s(6), paddingBottom: s(20), paddingLeft: s(6), paddingRight: s(6) }}>
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: '#050508', paddingTop: s(6), paddingBottom: s(20), paddingLeft: s(6), paddingRight: s(6) }}>
+      <div className="max-w-7xl w-full mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between" style={{ marginBottom: s(8) }}>
           <h1 className="text-2xl font-black text-gold-gradient" style={{ fontFamily: 'var(--font-outfit)' }}>

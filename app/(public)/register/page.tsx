@@ -74,8 +74,8 @@ export default function RegisterPage() {
   const fieldStyle: React.CSSProperties = { padding: `${s(3)} ${s(4)}`, borderRadius: s(2.5) };
 
   return (
-    <div className="min-h-screen" style={{ paddingTop: s(28), paddingBottom: s(20), paddingLeft: s(6), paddingRight: s(6) }}>
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen flex flex-col items-center justify-center" style={{ paddingTop: s(28), paddingBottom: s(20), paddingLeft: s(6), paddingRight: s(6) }}>
+      <div className="max-w-2xl w-full mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center" style={{ marginBottom: s(10) }}>
           <h1 className="text-4xl font-black" style={{ fontFamily: 'var(--font-outfit)', marginBottom: s(3) }}>
             🎤 Rejoindre <span className="text-gold-gradient">Golden Mic 237</span>
