@@ -14,10 +14,10 @@ export default function LeaderboardPage() {
 
   return (
     <div
-      className="min-h-screen"
+      className="min-h-screen w-full flex flex-col items-center justify-center"
       style={{ paddingTop: s(28), paddingBottom: s(20), paddingLeft: s(6), paddingRight: s(6) }}
     >
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-5xl w-full mx-auto">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center" style={{ marginBottom: s(12) }}>
           <h1 className="text-4xl sm:text-5xl font-black" style={{ fontFamily: 'var(--font-outfit)', marginBottom: s(3) }}>
@@ -25,7 +25,7 @@ export default function LeaderboardPage() {
           </h1>
           <p className="text-white/50 flex items-center justify-center" style={{ gap: s(2) }}>
             <span className="live-dot" />
-            Mis à jour en temps réel via Supabase Realtime
+            Mis à jour en temps réel
           </p>
         </motion.div>
 
