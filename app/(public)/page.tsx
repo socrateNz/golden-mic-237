@@ -81,7 +81,7 @@ export default function HomePage() {
               className="btn-gold text-lg w-full sm:w-auto flex items-center justify-center group"
               style={{ padding: `${s(5)} ${s(10)}`, gap: s(3) }}
             >
-              🗳️ Voter maintenant
+              Voter maintenant
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
@@ -89,7 +89,6 @@ export default function HomePage() {
               className="btn-outline-gold text-lg w-full sm:w-auto flex items-center justify-center"
               style={{ padding: `${s(5)} ${s(10)}`, gap: s(3) }}
             >
-              <Mic2 className="w-5 h-5" />
               S&apos;inscrire
             </Link>
           </motion.div>
@@ -240,7 +239,7 @@ export default function HomePage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="max-w-4xl mx-auto glass text-center relative overflow-hidden group"
-          style={{ 
+          style={{
             borderColor: 'rgba(245,158,11,0.2)',
             padding: 'clamp(48px, 6vw, 80px)',
             display: 'flex',
@@ -253,7 +252,7 @@ export default function HomePage() {
             backdropFilter: 'blur(10px)',
             border: '1px solid rgba(245,158,11,0.2)',
             boxShadow: '0 4px 30px rgba(0,0,0,0.4)',
-           }}
+          }}
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/5 blur-[100px]" style={{ marginRight: `-${s(32)}`, marginTop: `-${s(32)}` }} />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-400/5 blur-[100px]" style={{ marginLeft: `-${s(32)}`, marginBottom: `-${s(32)}` }} />
@@ -266,12 +265,12 @@ export default function HomePage() {
             Inscrivez-vous dès maintenant, mobilisez vos fans et devenez la prochaine légende de la musique camerounaise.
           </p>
           <div className="flex flex-col sm:flex-row justify-center" style={{ gap: s(4) }}>
-            <Link 
-            href="/register" 
-            style={{
-              padding: '12px 24px',
-            }}  className="btn-gold text-lg shadow-2xl">
-              🚀 Déposer ma candidature
+            <Link
+              href="/register"
+              style={{
+                padding: '12px 24px',
+              }} className="btn-gold text-lg shadow-2xl">
+              Déposer ma candidature
             </Link>
           </div>
         </motion.div>
@@ -332,7 +331,7 @@ function TopCandidateCard({ candidate, rank, isLarge = false }: { candidate: any
         className={`w-full rounded-xl font-bold text-sm transition-all ${rank === 1 ? 'bg-amber-500 text-black hover:bg-amber-400' : 'bg-white/5 text-white hover:bg-white/10'
           }`}
         style={{ marginTop: s(8), paddingTop: s(3), paddingBottom: s(3) }}      >
-        🗳️ Voter
+        Voter
       </Link>
     </motion.div>
   );

@@ -69,7 +69,7 @@ export default function Header() {
               style={{ padding: `${s(3)} ${s(6)}` }}
               className="btn-gold text-lg shadow-2xl"
             >
-              🗳️ Voter maintenant
+              Voter maintenant
             </Link>
           </div>
 
