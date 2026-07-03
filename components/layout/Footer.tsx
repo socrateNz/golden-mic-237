@@ -6,7 +6,7 @@ export default function Footer() {
   return (
     <footer
       className="border-t"
-      style={{ borderColor: 'rgba(245,158,11,0.1)', background: '#05050d', marginTop: s(20)  }}
+      style={{ borderColor: 'rgba(245,158,11,0.1)', background: '#05050d', marginTop: s(20) }}
     >
       <div className="max-w-7xl mx-auto" style={{ paddingLeft: s(6), paddingRight: s(6), paddingTop: s(12), paddingBottom: s(12), marginLeft: "auto", marginRight: "auto" }}>
         <div className="grid grid-cols-1 md:grid-cols-4" style={{ gap: s(8) }}>
@@ -20,7 +20,7 @@ export default function Footer() {
                 Golden Mic 237
               </span>
             </div>
-            <p className="text-white/40 text-sm leading-relaxed max-w-xs">
+            <p className="text-white text-sm leading-relaxed max-w-xs">
               La première compétition musicale 100% digitale au Cameroun. Votez, soutenez, célébrez la musique camerounaise.
             </p>
             <div className="flex" style={{ gap: s(3), marginTop: s(5) }}>
@@ -48,7 +48,7 @@ export default function Footer() {
                 { href: '/sponsors', label: 'Sponsoring' },
               ].map((link) => (
                 <Link key={link.href} href={link.href}
-                  className="block text-sm text-white/50 hover:text-amber-400 transition-colors">
+                  className="block text-sm text-white hover:text-amber-400 transition-colors">
                   {link.label}
                 </Link>
               ))}
@@ -58,7 +58,7 @@ export default function Footer() {
           {/* Vote info */}
           <div>
             <p className="text-amber-400 text-xs font-bold uppercase tracking-widest" style={{ marginBottom: s(4) }}>Vote</p>
-            <div className="text-sm text-white/40" style={{ display: 'flex', flexDirection: 'column', gap: s(2) }}>
+            <div className="text-sm text-white" style={{ display: 'flex', flexDirection: 'column', gap: s(2) }}>
               <p>100 FCFA = 10 points</p>
               <p>Mobile Money MTN</p>
               <p>Mobile Money Orange</p>
@@ -71,8 +71,8 @@ export default function Footer() {
           className="border-t flex flex-col sm:flex-row justify-between items-center"
           style={{ borderColor: 'rgba(255,255,255,0.06)', marginTop: s(10), paddingTop: s(6), gap: s(4) }}
         >
-          <p className="text-white/30 text-xs">© 2026 Golden Mic 237. Tous droits réservés. 🇨🇲</p>
-          <p className="text-white/20 text-xs">design and built by <a href="https://portfolio-socrate.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:text-amber-300">Etarcos Dev</a></p>
+          <p className="text-white text-xs">© 2026 Golden Mic 237. Tous droits réservés. 🇨🇲</p>
+          <p className="text-white text-xs">design and built by <a href="https://portfolio-socrate.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:text-amber-300">Etarcos Dev</a></p>
         </div>
       </div>
     </footer>

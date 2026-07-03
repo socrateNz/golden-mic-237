@@ -17,7 +17,7 @@ export default function HomePage() {
     <div className="bg-bg min-h-screen text-white overflow-x-hidden">
       {/* ── HERO ── */}
       <section
-        className="relative min-h-[90vh] flex items-start justify-center"
+        className="relative min-h-[40vh] flex items-start justify-start md:justify-center md:min-h-[90vh]"
         style={{ paddingTop: s(32), paddingBottom: s(20), paddingLeft: s(4), paddingRight: s(4) }}
       >
         {/* Animated Background Elements */}
@@ -54,7 +54,7 @@ export default function HomePage() {
             GOLDEN <span className="text-gold-gradient">MIC</span>
             <br />
             <span
-              className="text-white/20 text-3xl sm:text-5xl md:text-6xl tracking-widest inline-block"
+              className="text-white text-3xl sm:text-5xl md:text-6xl tracking-widest inline-block"
               style={{ marginTop: s(4) }}
             >
               CAMEROUN 237
@@ -63,10 +63,10 @@ export default function HomePage() {
 
           <motion.p
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.6 }}
-            className="text-lg sm:text-xl text-white/50 max-w-2xl mx-auto leading-relaxed font-medium"
+            className="text-lg sm:text-xl text-white max-w-2xl mx-auto leading-relaxed font-medium"
             style={{ marginBottom: s(12) }}
           >
-            La première compétition musicale <span className="text-white">100% digitale</span> au Cameroun.
+            La première compétition musicale <span className="text-amber-400">100% digitale</span> au Cameroun.
             Propulsez votre artiste préféré vers la victoire à partir de <span className="text-amber-400 font-bold">100 FCFA</span>.
           </motion.p>
 
@@ -105,10 +105,10 @@ export default function HomePage() {
               { icon: Zap, value: '100 F', label: 'Vote Minimum' },
               { icon: Star, value: 'TOP 10', label: 'Récompensés' },
             ].map((stat, i) => (
-              <div key={i} className="text-center">
-                <stat.icon className="w-5 h-5 text-amber-500 mx-auto opacity-50" style={{ marginBottom: s(3) }} />
+              <div key={i} className="text-center flex flex-col items-center justify-center">
+                <stat.icon className="w-5 h-5 text-amber-500 mx-auto" style={{ marginBottom: s(3) }} />
                 <p className="text-2xl font-black text-white" style={{ fontFamily: 'var(--font-outfit)' }}>{stat.value}</p>
-                <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold" style={{ marginTop: s(1) }}>
+                <p className="text-[10px] text-white uppercase tracking-[0.2em] font-bold" style={{ marginTop: s(1) }}>
                   {stat.label}
                 </p>
               </div>
@@ -156,7 +156,7 @@ export default function HomePage() {
               <h2 className="text-3xl font-black" style={{ fontFamily: 'var(--font-outfit)', marginBottom: s(2) }}>
                 Derniers <span className="text-gold-gradient">Votes</span>
               </h2>
-              <p className="text-white/40 flex items-center" style={{ gap: s(2) }}>
+              <p className="text-white flex items-center" style={{ gap: s(2) }}>
                 <span className="live-dot" /> Activité en temps réel
               </p>
             </div>
@@ -197,11 +197,11 @@ export default function HomePage() {
         style={{ paddingTop: s(24), paddingBottom: s(24), paddingLeft: s(6), paddingRight: s(6) }}
       >
         <div className="max-w-5xl mx-auto">
-          <div className="text-center" style={{ marginBottom: s(16) }}>
+          <div className="text-center flex flex-col items-center justify-center" style={{ marginBottom: s(16) }}>
             <h2 className="text-3xl font-black" style={{ fontFamily: 'var(--font-outfit)', marginBottom: s(4) }}>
               Comment <span className="text-gold-gradient">Voter</span> ?
             </h2>
-            <p className="text-white/40 max-w-md mx-auto">Soutenez vos artistes préférés en quelques clics seulement.</p>
+            <p className="text-white max-w-md mx-auto">Soutenez vos artistes préférés en quelques clics seulement.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3" style={{ gap: s(12) }}>
@@ -211,7 +211,7 @@ export default function HomePage() {
               { step: '03', title: 'Validation', desc: 'Payez via Mobile Money et voyez les points s’ajouter en direct.' },
             ].map((item, i) => (
               <div key={i} className="relative text-center group">
-                <div className="text-6xl font-black text-white/[0.03] absolute -top-10 left-1/2 -translate-x-1/2 select-none group-hover:text-amber-400/5 transition-colors">
+                <div className="text-6xl font-black text-white absolute -top-10 left-1/2 -translate-x-1/2 select-none group-hover:text-amber-400/5 transition-colors">
                   {item.step}
                 </div>
                 <h3
@@ -220,7 +220,7 @@ export default function HomePage() {
                 >
                   {item.title}
                 </h3>
-                <p className="text-white/40 text-sm leading-relaxed">{item.desc}</p>
+                <p className="text-white/60 text-sm leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
