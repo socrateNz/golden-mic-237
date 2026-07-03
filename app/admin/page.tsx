@@ -5,17 +5,23 @@ import { motion } from 'framer-motion';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, setAdminToken } from '@/lib/api';
 import { useAdminStore } from '@/store';
-import { CheckCircle2, XCircle, PauseCircle, Users, TrendingUp, DollarSign, AlertTriangle, LogOut, Loader2 } from 'lucide-react';
+import { CheckCircle2, XCircle, PauseCircle, Users, TrendingUp, DollarSign, AlertTriangle, LogOut, Loader2, Eye, Pencil } from 'lucide-react';
 import { formatPoints, formatFCFA } from '@/lib/utils';
 import { toast } from 'sonner';
 import { s } from '@/lib/spacing';
+import Link from 'next/link';
 import LoadingButton from '@/components/LoadingButton';
 import RegisterCandidateModal from '@/components/admin/RegisterCandidateModal';
+import EditCandidateModal from '@/components/admin/EditCandidateModal';
+import ViewCandidateModal from '@/components/admin/ViewCandidateModal';
 
 export default function AdminDashboardPage() {
   const { adminToken, isAdmin, setAdminToken: storeToken, logout } = useAdminStore();
   const [loginKey, setLoginKey] = useState('');
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState<any | null>(null);
   const qc = useQueryClient();
   const adminInputStyle: React.CSSProperties = { padding: `${s(3)} ${s(4)}`, borderRadius: s(2.5) };
 
@@ -208,7 +214,21 @@ export default function AdminDashboardPage() {
                         </span>
                       </td>
                       <td style={{ paddingLeft: s(5), paddingRight: s(5), paddingTop: s(4), paddingBottom: s(4) }}>
-                        <div className="flex" style={{ gap: s(2) }}>
+                        <div className="flex items-center" style={{ gap: s(2) }}>
+                          <button onClick={() => { setSelectedCandidate(c); setIsViewOpen(true); }}
+                            className="rounded-lg text-blue-400 hover:bg-blue-400/10 transition-colors"
+                            style={{ padding: s(1.5) }}
+                            title="Voir la fiche"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => { setSelectedCandidate(c); setIsEditOpen(true); }}
+                            className="rounded-lg text-amber-400 hover:bg-amber-400/10 transition-colors"
+                            style={{ padding: s(1.5) }}
+                            title="Modifier"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
                           {c.status !== 'approved' && (
                             <button onClick={() => updateStatus({ id: c.id, status: 'approved' })}
                               className="rounded-lg text-green-400 hover:bg-green-400/10 transition-colors"
@@ -303,6 +323,19 @@ export default function AdminDashboardPage() {
         isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
         adminToken={adminToken!}
+      />
+
+      <EditCandidateModal
+        isOpen={isEditOpen}
+        onClose={() => { setIsEditOpen(false); setSelectedCandidate(null); }}
+        candidate={selectedCandidate}
+        adminToken={adminToken!}
+      />
+
+      <ViewCandidateModal
+        isOpen={isViewOpen}
+        onClose={() => { setIsViewOpen(false); setSelectedCandidate(null); }}
+        candidate={selectedCandidate}
       />
     </div>
   );
