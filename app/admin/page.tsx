@@ -10,10 +10,12 @@ import { formatPoints, formatFCFA } from '@/lib/utils';
 import { toast } from 'sonner';
 import { s } from '@/lib/spacing';
 import LoadingButton from '@/components/LoadingButton';
+import RegisterCandidateModal from '@/components/admin/RegisterCandidateModal';
 
 export default function AdminDashboardPage() {
   const { adminToken, isAdmin, setAdminToken: storeToken, logout } = useAdminStore();
   const [loginKey, setLoginKey] = useState('');
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const qc = useQueryClient();
   const adminInputStyle: React.CSSProperties = { padding: `${s(3)} ${s(4)}`, borderRadius: s(2.5) };
 
@@ -152,7 +154,16 @@ export default function AdminDashboardPage() {
               paddingBottom: s(4),
             }}
           >
-            <h2 className="font-bold text-lg" style={{ fontFamily: 'var(--font-outfit)' }}>Gestion des candidats</h2>
+            <div className="flex items-center" style={{ gap: s(4) }}>
+              <h2 className="font-bold text-lg" style={{ fontFamily: 'var(--font-outfit)' }}>Gestion des candidats</h2>
+              <button
+                onClick={() => setIsRegisterOpen(true)}
+                className="btn-gold flex items-center text-xs font-semibold"
+                style={{ padding: `${s(1.5)} ${s(3)}`, borderRadius: s(2), gap: s(1.5) }}
+              >
+                Inscrire un candidat
+              </button>
+            </div>
             {updating && <Loader2 className="w-5 h-5 animate-spin text-amber-400" />}
           </div>
 
@@ -287,6 +298,12 @@ export default function AdminDashboardPage() {
           </div>
         )}
       </div>
+
+      <RegisterCandidateModal
+        isOpen={isRegisterOpen}
+        onClose={() => setIsRegisterOpen(false)}
+        adminToken={adminToken!}
+      />
     </div>
   );
 }

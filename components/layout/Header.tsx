@@ -9,7 +9,6 @@ import { s } from '@/lib/spacing';
 const navLinks = [
   { href: '/candidates', label: 'Candidats', icon: Users },
   { href: '/leaderboard', label: 'Classement', icon: Trophy },
-  { href: '/register', label: "S'inscrire", icon: Star },
 ];
 
 export default function Header() {

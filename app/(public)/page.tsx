@@ -84,13 +84,6 @@ export default function HomePage() {
               Voter maintenant
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <Link
-              href="/register"
-              className="btn-outline-gold text-lg w-full sm:w-auto flex items-center justify-center"
-              style={{ padding: `${s(5)} ${s(10)}`, gap: s(3) }}
-            >
-              S&apos;inscrire
-            </Link>
           </motion.div>
 
           {/* Quick Stats */}
@@ -227,54 +220,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── CALL TO ACTION ── */}
-      <section style={{
-        paddingTop: '100px',
-        paddingBottom: '100px',
-        paddingLeft: '24px',
-        paddingRight: '24px',
-      }} className="flex flex-col items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto glass text-center relative overflow-hidden group"
-          style={{
-            borderColor: 'rgba(245,158,11,0.2)',
-            padding: 'clamp(48px, 6vw, 80px)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '16px',
-            borderRadius: '16px',
-            backgroundColor: 'rgba(245,158,11,0.05)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(245,158,11,0.2)',
-            boxShadow: '0 4px 30px rgba(0,0,0,0.4)',
-          }}
-        >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/5 blur-[100px]" style={{ marginRight: `-${s(32)}`, marginTop: `-${s(32)}` }} />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-400/5 blur-[100px]" style={{ marginLeft: `-${s(32)}`, marginBottom: `-${s(32)}` }} />
 
-          <Star style={{ marginBottom: '8px' }} className="w-12 h-12 text-amber-500 mx-auto opacity-50" />
-          <h2 className="text-4xl md:text-5xl font-black leading-tight" style={{ fontFamily: 'var(--font-outfit)' }}>
-            Vous avez du <span className="text-gold-gradient">Talent</span> ?
-          </h2>
-          <p className="text-lg text-white/50 max-w-xl mx-auto font-medium">
-            Inscrivez-vous dès maintenant, mobilisez vos fans et devenez la prochaine légende de la musique camerounaise.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center" style={{ gap: s(4) }}>
-            <Link
-              href="/register"
-              style={{
-                padding: '12px 24px',
-              }} className="btn-gold text-lg shadow-2xl">
-              Déposer ma candidature
-            </Link>
-          </div>
-        </motion.div>
-      </section>
     </div>
   );
 }
