@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Trophy, Flame, Music2, Zap } from 'lucide-react';
 import type { Candidate } from '@/types';
-import { formatPoints, getWhatsAppShareUrl } from '@/lib/utils';
+import { formatPoints } from '@/lib/utils';
 import { s } from '@/lib/spacing';
 
 interface CandidateCardProps {
