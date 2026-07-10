@@ -113,7 +113,7 @@ export default function HomePage() {
       {/* ── TOP 3 SPOTLIGHT ── */}
       {lb?.leaderboard && lb.leaderboard.length >= 3 && (
         <section
-          className="mx-auto relative bg-gradient-to-b from-transparent to-[#0f0f1a]/50"
+          className="mx-auto relative bg-gradient-to-b from-transparent to-[#0f0f1a]/50 w-full"
           style={{ paddingTop: s(24), paddingBottom: s(24), paddingLeft: s(6), paddingRight: s(6) }}
         >
           <div className="max-w-6xl mx-auto">
@@ -124,7 +124,7 @@ export default function HomePage() {
               <div className="h-1 w-20 bg-amber-500 mx-auto rounded-full" />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 items-end" style={{ gap: s(8) }}>
+            <div className="grid grid-cols-1 md:grid-cols-3 items-end w-full mx-auto" style={{ gap: s(8) }}>
               {/* Rank 2 */}
               <div className="order-2 md:order-1">
                 <TopCandidateCard candidate={lb.leaderboard[1]} rank={2} />

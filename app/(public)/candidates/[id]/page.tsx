@@ -379,7 +379,7 @@ export default function CandidateProfilePage() {
             )}
 
             {/* VIDEO */}
-            {candidate.video_url && (
+            {/* {candidate.video_url && (
               <div style={{ marginTop: s(6) }}>
 
                 <h2
@@ -401,7 +401,7 @@ export default function CandidateProfilePage() {
                   />
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* CTA */}
             <div
