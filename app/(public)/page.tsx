@@ -113,10 +113,10 @@ export default function HomePage() {
       {/* ── TOP 3 SPOTLIGHT ── */}
       {lb?.leaderboard && lb.leaderboard.length >= 3 && (
         <section
-          className="mx-auto relative bg-gradient-to-b from-transparent to-[#0f0f1a]/50 w-full"
+          className="mx-auto relative bg-gradient-to-b from-transparent to-[#0f0f1a]/50 flex items-center justify-center"
           style={{ paddingTop: s(24), paddingBottom: s(24), paddingLeft: s(6), paddingRight: s(6) }}
         >
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl w-full mx-auto">
             <div className="text-center" style={{ marginBottom: s(16) }}>
               <h2 className="text-4xl md:text-5xl font-black" style={{ fontFamily: 'var(--font-outfit)', marginBottom: s(4) }}>
                 LE <span className="text-gold-gradient">TOP 3</span> ACTUEL
