@@ -37,7 +37,7 @@ export function formatRelativeTime(dateString: string): string {
   return formatDate(dateString);
 }
 
-export function getWhatsAppShareUrl(candidateName: string, slug: string): string {
+export function getWhatsAppShareUrl(candidateName: string, id: string): string {
   let baseUrl = 'http://localhost:3000';
   if (typeof window !== 'undefined') {
     baseUrl = window.location.origin;
@@ -48,7 +48,7 @@ export function getWhatsAppShareUrl(candidateName: string, slug: string): string
     baseUrl = process.env.NEXT_PUBLIC_API_URL.replace('-backend', '-frontend').replace('3001', '3000');
   }
 
-  const url = `${baseUrl}/candidates/${slug}`;
+  const url = `${baseUrl}/candidates/${id}`;
   const text = encodeURIComponent(
     `🎤 Votez pour *${candidateName}* sur Golden Mic 237 ! 🇨🇲\n\n` +
     `Soutenez votre artiste préféré avec seulement 100 FCFA.\n\n${url}`

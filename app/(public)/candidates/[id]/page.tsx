@@ -430,7 +430,7 @@ export default function CandidateProfilePage() {
               <a
                 href={getWhatsAppShareUrl(
                   candidate.artist_name,
-                  candidate.slug
+                  candidate.id
                 )}
                 target="_blank"
                 rel="noopener noreferrer"
