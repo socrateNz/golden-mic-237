@@ -92,9 +92,6 @@ export interface Category {
   slug: string;
 }
 
-export const CAMEROON_REGIONS = [
-  'Adamaoua', 'Centre', 'Est', 'Extrême-Nord', 'Littoral',
-  'Nord', 'Nord-Ouest', 'Ouest', 'Sud', 'Sud-Ouest',
-] as const;
+export const CAMEROON_REGIONS = ['Douala', 'Yaoundé'] as const;
 
 export const VOTE_AMOUNTS = [100, 500, 1000, 2000, 5000, 10000] as const;

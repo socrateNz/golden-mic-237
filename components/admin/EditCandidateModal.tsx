@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { type Category, type Candidate } from '@/types';
+import { CAMEROON_REGIONS } from '@/types';
 import { toast } from 'sonner';
 import { X, Upload } from 'lucide-react';
 import { s } from '@/lib/spacing';
@@ -165,6 +166,17 @@ export default function EditCandidateModal({ candidate, isOpen, onClose, adminTo
                       {categories.map((category) => (
                         <option key={category.id} value={category.id}>
                           {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelCls} style={labelStyle}>Région *</label>
+                    <select name="region" required defaultValue={candidate.region ?? ''} className={`${inputCls} bg-[#0f0f1a]`} style={fieldStyle}>
+                      <option value="">Sélectionner...</option>
+                      {CAMEROON_REGIONS.map((region) => (
+                        <option key={region} value={region}>
+                          {region}
                         </option>
                       ))}
                     </select>
