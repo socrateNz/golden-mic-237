@@ -38,7 +38,17 @@ export function formatRelativeTime(dateString: string): string {
 }
 
 export function getWhatsAppShareUrl(candidateName: string, slug: string): string {
-  const url = `${process.env.NEXT_PUBLIC_API_URL?.replace('3001', '3000') || 'http://localhost:3000'}/candidates/${slug}`;
+  let baseUrl = 'http://localhost:3000';
+  if (typeof window !== 'undefined') {
+    baseUrl = window.location.origin;
+  } else if (process.env.NEXT_PUBLIC_APP_URL) {
+    baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+  } else if (process.env.NEXT_PUBLIC_API_URL) {
+    // Fallback: Attempt to guess frontend URL from API URL
+    baseUrl = process.env.NEXT_PUBLIC_API_URL.replace('-backend', '-frontend').replace('3001', '3000');
+  }
+
+  const url = `${baseUrl}/candidates/${slug}`;
   const text = encodeURIComponent(
     `🎤 Votez pour *${candidateName}* sur Golden Mic 237 ! 🇨🇲\n\n` +
     `Soutenez votre artiste préféré avec seulement 100 FCFA.\n\n${url}`
