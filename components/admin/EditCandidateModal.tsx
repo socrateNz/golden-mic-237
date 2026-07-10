@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-import { CAMEROON_REGIONS, type Category, type Candidate } from '@/types';
+import { type Category, type Candidate } from '@/types';
 import { toast } from 'sonner';
 import { X, Upload } from 'lucide-react';
 import { s } from '@/lib/spacing';
@@ -157,17 +157,7 @@ export default function EditCandidateModal({ candidate, isOpen, onClose, adminTo
                     <label className={labelCls} style={labelStyle}>Nom d&apos;artiste *</label>
                     <input name="artistName" required defaultValue={candidate.artist_name} className={inputCls} style={fieldStyle} placeholder="DJ Fiela" />
                   </div>
-                  <div>
-                    <label className={labelCls} style={labelStyle}>Date de naissance *</label>
-                    <input name="dateOfBirth" type="date" required defaultValue={candidate.date_of_birth} className={inputCls} style={fieldStyle} />
-                  </div>
-                  <div>
-                    <label className={labelCls} style={labelStyle}>Région *</label>
-                    <select name="region" required defaultValue={candidate.region} className={`${inputCls} bg-[#0f0f1a]`} style={fieldStyle}>
-                      <option value="">Sélectionner...</option>
-                      {CAMEROON_REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
-                    </select>
-                  </div>
+
                   <div>
                     <label className={labelCls} style={labelStyle}>Catégorie *</label>
                     <select name="categoryId" required defaultValue={candidate.category_id ?? ''} className={`${inputCls} bg-[#0f0f1a]`} style={fieldStyle}>
@@ -196,31 +186,7 @@ export default function EditCandidateModal({ candidate, isOpen, onClose, adminTo
                     placeholder="Parlez-nous de vous, votre parcours musical, votre style..." />
                 </div>
 
-                {/* Vidéo */}
-                <div>
-                  <label className={labelCls} style={labelStyle}>Lien vidéo YouTube (live / clip)</label>
-                  <input name="videoUrl" type="url" defaultValue={candidate.video_url ?? ''} className={inputCls} style={fieldStyle} placeholder="https://youtube.com/watch?v=..." />
-                </div>
 
-                {/* Réseaux */}
-                <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: s(4) }}>
-                  <div>
-                    <label className={labelCls} style={labelStyle}>Instagram</label>
-                    <input name="instagramUrl" type="url" defaultValue={candidate.instagram_url ?? ''} className={inputCls} style={fieldStyle} placeholder="https://instagram.com/..." />
-                  </div>
-                  <div>
-                    <label className={labelCls} style={labelStyle}>Facebook</label>
-                    <input name="facebookUrl" type="url" defaultValue={candidate.facebook_url ?? ''} className={inputCls} style={fieldStyle} placeholder="https://facebook.com/..." />
-                  </div>
-                  <div>
-                    <label className={labelCls} style={labelStyle}>TikTok</label>
-                    <input name="tiktokUrl" type="url" defaultValue={candidate.tiktok_url ?? ''} className={inputCls} style={fieldStyle} placeholder="https://tiktok.com/..." />
-                  </div>
-                  <div>
-                    <label className={labelCls} style={labelStyle}>YouTube</label>
-                    <input name="youtubeUrl" type="url" defaultValue={candidate.youtube_url ?? ''} className={inputCls} style={fieldStyle} placeholder="https://youtube.com/..." />
-                  </div>
-                </div>
 
                 {/* Submit */}
                 <div className="flex justify-end gap-3 border-t border-amber-400/10" style={{ paddingTop: s(5), marginTop: s(2) }}>

@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, setAdminToken } from '@/lib/api';
 import { useAdminStore } from '@/store';
-import { CheckCircle2, XCircle, PauseCircle, Users, TrendingUp, DollarSign, AlertTriangle, LogOut, Loader2, Eye, Pencil } from 'lucide-react';
+import { CheckCircle2, XCircle, PauseCircle, Users, TrendingUp, DollarSign, AlertTriangle, LogOut, Loader2, Eye, Pencil, Trash2 } from 'lucide-react';
 import { formatPoints, formatFCFA } from '@/lib/utils';
 import { toast } from 'sonner';
 import { s } from '@/lib/spacing';
@@ -14,6 +14,7 @@ import LoadingButton from '@/components/LoadingButton';
 import RegisterCandidateModal from '@/components/admin/RegisterCandidateModal';
 import EditCandidateModal from '@/components/admin/EditCandidateModal';
 import ViewCandidateModal from '@/components/admin/ViewCandidateModal';
+import ConfirmDeleteModal from '@/components/admin/ConfirmDeleteModal';
 
 export default function AdminDashboardPage() {
   const { adminToken, isAdmin, setAdminToken: storeToken, logout } = useAdminStore();
@@ -21,6 +22,8 @@ export default function AdminDashboardPage() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isViewOpen, setIsViewOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [candidateToDelete, setCandidateToDelete] = useState<any | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<any | null>(null);
   const qc = useQueryClient();
   const adminInputStyle: React.CSSProperties = { padding: `${s(3)} ${s(4)}`, borderRadius: s(2.5) };
@@ -69,6 +72,22 @@ export default function AdminDashboardPage() {
       toast.success('Statut mis à jour');
     },
     onError: () => toast.error('Erreur lors de la mise à jour'),
+  });
+
+  const { mutate: deleteCandidate, isPending: deleting } = useMutation({
+    mutationFn: async (id: string) => {
+      await api.delete(`/api/admin/candidates?id=${id}`, {
+        headers: { 'x-admin-token': adminToken! },
+      });
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-candidates'] });
+      qc.invalidateQueries({ queryKey: ['admin-analytics'] });
+      toast.success('Candidat supprimé avec succès');
+      setIsDeleteOpen(false);
+      setCandidateToDelete(null);
+    },
+    onError: () => toast.error('Erreur lors de la suppression'),
   });
 
   // Login gate
@@ -170,7 +189,7 @@ export default function AdminDashboardPage() {
                 Inscrire un candidat
               </button>
             </div>
-            {updating && <Loader2 className="w-5 h-5 animate-spin text-amber-400" />}
+            {(updating || deleting) && <Loader2 className="w-5 h-5 animate-spin text-amber-400" />}
           </div>
 
           {isLoading ? (
@@ -256,6 +275,13 @@ export default function AdminDashboardPage() {
                               <PauseCircle className="w-4 h-4" />
                             </button>
                           )}
+                          <button onClick={() => { setCandidateToDelete(c); setIsDeleteOpen(true); }}
+                            className="rounded-lg text-red-600 hover:bg-red-600/10 transition-colors"
+                            style={{ padding: s(1.5), marginLeft: s(1) }}
+                            title="Supprimer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -336,6 +362,14 @@ export default function AdminDashboardPage() {
         isOpen={isViewOpen}
         onClose={() => { setIsViewOpen(false); setSelectedCandidate(null); }}
         candidate={selectedCandidate}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteOpen}
+        onClose={() => { setIsDeleteOpen(false); setCandidateToDelete(null); }}
+        onConfirm={() => { if (candidateToDelete) deleteCandidate(candidateToDelete.id); }}
+        isDeleting={deleting}
+        candidateName={candidateToDelete?.artist_name}
       />
     </div>
   );
