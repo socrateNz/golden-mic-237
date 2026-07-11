@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { useRealtimeLeaderboard } from '@/hooks/useRealtimeLeaderboard';
-import { formatPoints, formatRelativeTime } from '@/lib/utils';
+import { formatPoints, formatRelativeTime, calculateTotalNote } from '@/lib/utils';
 import { s } from '@/lib/spacing';
 
 export default function LeaderboardPage() {
@@ -50,7 +50,7 @@ export default function LeaderboardPage() {
                 <p className="font-bold text-sm leading-tight truncate w-full" style={{ fontFamily: 'var(--font-outfit)' }}>
                   {c.artist_name}
                 </p>
-                <p className="text-amber-400 font-black text-lg">{formatPoints(c.total_points)}</p>
+                <p className="text-amber-400 font-black text-lg">{formatPoints(calculateTotalNote(c))}</p>
               </motion.div>
             ))}
           </div>
@@ -109,7 +109,7 @@ export default function LeaderboardPage() {
               </div>
               <div className="col-span-3 text-right">
                 <p className="font-black text-amber-400" style={{ fontFamily: 'var(--font-outfit)' }}>
-                  {formatPoints(c.total_points)}
+                  {formatPoints(calculateTotalNote(c))}
                 </p>
               </div>
               <div className="col-span-2 text-right hidden sm:block">

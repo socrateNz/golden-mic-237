@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Trophy, Users, Zap, ChevronRight, Mic2, Star } from 'lucide-react';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { useRealtimeLeaderboard } from '@/hooks/useRealtimeLeaderboard';
-import { formatPoints, formatRelativeTime } from '@/lib/utils';
+import { formatPoints, formatRelativeTime, calculateTotalNote } from '@/lib/utils';
 import { s } from '@/lib/spacing';
 
 export default function HomePage() {
@@ -94,7 +94,7 @@ export default function HomePage() {
           >
             {[
               { icon: Users, value: lb?.leaderboard?.length ?? '...', label: 'Candidats' },
-              { icon: Trophy, value: lb?.leaderboard?.[0] ? formatPoints(lb.leaderboard[0].total_points) : '...', label: 'Record Points' },
+              { icon: Trophy, value: lb?.leaderboard?.[0] ? formatPoints(calculateTotalNote(lb.leaderboard[0])) : '...', label: 'Record Points' },
               { icon: Zap, value: '100 F', label: 'Vote Minimum' },
               { icon: Star, value: 'TOP 10', label: 'Récompensés' },
             ].map((stat, i) => (
@@ -268,7 +268,7 @@ function TopCandidateCard({ candidate, rank, isLarge = false }: { candidate: any
       <div className="w-full border-t border-white/5" style={{ paddingTop: s(6) }}>
         <p className="text-xs text-white/30 uppercase tracking-[0.2em] font-bold" style={{ marginBottom: s(1) }}>Score Actuel</p>
         <p className={`font-black text-gold-gradient ${isLarge ? 'text-4xl' : 'text-3xl'}`} style={{ fontFamily: 'var(--font-outfit)' }}>
-          {formatPoints(candidate.total_points)}
+          {formatPoints(calculateTotalNote(candidate))}
         </p>
       </div>
 
