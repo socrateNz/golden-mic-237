@@ -6,9 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatPoints(points: number): string {
-  if (points >= 1_000_000) return `${(points / 1_000_000).toFixed(1)}M pts`;
-  if (points >= 1_000) return `${(points / 1_000).toFixed(1)}K pts`;
-  return `${points} pts`;
+  return `${new Intl.NumberFormat('fr-FR').format(points)} pts`;
 }
 
 export function formatFCFA(amount: number): string {

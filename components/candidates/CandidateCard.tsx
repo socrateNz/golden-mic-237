@@ -339,7 +339,7 @@ export default function CandidateCard({ candidate, rank, index = 0 }: CandidateC
                     color: '#fff',
                   }}
                 >
-                  {candidate.vote_count > 999 ? `${(candidate.vote_count / 1000).toFixed(1)}k` : candidate.vote_count}
+                  {new Intl.NumberFormat('fr-FR').format(candidate.vote_count)}
                 </p>
               </div>
             </div>
