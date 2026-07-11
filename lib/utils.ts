@@ -11,6 +11,7 @@ export function formatPoints(points: number): string {
 
 export function calculateTotalNote(candidate: any): number {
   if (!candidate) return 0;
+  if (candidate.note_totale !== undefined && candidate.note_totale !== null) return Number(candidate.note_totale);
   const juryTotal = (candidate.jury_ecriture || 0) + (candidate.jury_technique || 0) + (candidate.jury_attitude || 0) + (candidate.jury_originalite || 0);
   const socialTotal = (candidate.social_likes || 0) + ((candidate.social_comments || 0) * 2) + ((candidate.social_shares || 0) * 5);
   return juryTotal + socialTotal + (candidate.total_points || 0);
