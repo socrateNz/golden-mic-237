@@ -13,6 +13,32 @@ import { useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { detectPaymentMethod } from '@/lib/notchpay';
 
+const SUPPORTED_COUNTRIES = [
+  { code: 'CM', dialCode: '+237', name: 'Cameroun', flag: '🇨🇲' },
+  { code: 'BJ', dialCode: '+229', name: 'Bénin', flag: '🇧🇯' },
+  { code: 'BF', dialCode: '+226', name: 'Burkina Faso', flag: '🇧🇫' },
+  { code: 'BI', dialCode: '+257', name: 'Burundi', flag: '🇧🇮' },
+  { code: 'CI', dialCode: '+225', name: 'Côte d\'Ivoire', flag: '🇨🇮' },
+  { code: 'CG', dialCode: '+242', name: 'Congo', flag: '🇨🇬' },
+  { code: 'GA', dialCode: '+241', name: 'Gabon', flag: '🇬🇦' },
+  { code: 'GH', dialCode: '+233', name: 'Ghana', flag: '🇬🇭' },
+  { code: 'GN', dialCode: '+224', name: 'Guinée', flag: '🇬🇳' },
+  { code: 'GQ', dialCode: '+240', name: 'Guinée équat.', flag: '🇬🇶' },
+  { code: 'KE', dialCode: '+254', name: 'Kenya', flag: '🇰🇪' },
+  { code: 'MG', dialCode: '+261', name: 'Madagascar', flag: '🇲🇬' },
+  { code: 'ML', dialCode: '+223', name: 'Mali', flag: '🇲🇱' },
+  { code: 'NE', dialCode: '+227', name: 'Niger', flag: '🇳🇪' },
+  { code: 'NG', dialCode: '+234', name: 'Nigeria', flag: '🇳🇬' },
+  { code: 'UG', dialCode: '+256', name: 'Ouganda', flag: '🇺🇬' },
+  { code: 'CF', dialCode: '+236', name: 'RCA', flag: '🇨🇫' },
+  { code: 'CD', dialCode: '+243', name: 'RDC', flag: '🇨🇩' },
+  { code: 'RW', dialCode: '+250', name: 'Rwanda', flag: '🇷🇼' },
+  { code: 'SN', dialCode: '+221', name: 'Sénégal', flag: '🇸🇳' },
+  { code: 'TZ', dialCode: '+255', name: 'Tanzanie', flag: '🇹🇿' },
+  { code: 'TD', dialCode: '+235', name: 'Tchad', flag: '🇹🇩' },
+  { code: 'TG', dialCode: '+228', name: 'Togo', flag: '🇹🇬' },
+];
+
 interface VoteModalProps {
   candidate: Candidate;
   isOpen: boolean;
@@ -24,7 +50,9 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
   const [customAmount, setCustomAmount] = useState('');
   const [voterName, setVoterName] = useState('');
   const [voterEmail, setVoterEmail] = useState('');
-  const [voterPhone, setVoterPhone] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState(SUPPORTED_COUNTRIES[0]);
+  const [localPhone, setLocalPhone] = useState('');
+  const voterPhone = localPhone ? `${selectedCountry.dialCode}${localPhone.replace(/\D/g, '')}` : '';
   const [paymentData, setPaymentData] = useState<VoteInitiateResponse | null>(null);
   const [paymentFrameLoaded, setPaymentFrameLoaded] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'checking' | 'complete' | 'failed'>('pending');
@@ -141,7 +169,11 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
       {
         onSuccess: (data) => {
           setPaymentData(data);
-          setPaymentStatus('checking');
+          if (operator) {
+            setPaymentStatus('checking');
+          } else {
+            setPaymentStatus('pending');
+          }
           startStatusChecking(data);
         },
         onError: (err) => toast.error(err.message ?? 'Erreur lors du vote'),
@@ -155,7 +187,8 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
     setPaymentStatus('pending');
     setVoterName('');
     setVoterEmail('');
-    setVoterPhone('');
+    setLocalPhone('');
+    setSelectedCountry(SUPPORTED_COUNTRIES[0]);
     setSelectedAmount(null);
     setCustomAmount('');
     if (statusCheckTimeout) clearTimeout(statusCheckTimeout);
@@ -265,22 +298,45 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                         </motion.span>
                       )}
                     </div>
-                    <input
-                      type="tel"
-                      placeholder="Ex: 237 6XXXXXXXX"
-                      value={voterPhone}
-                      onChange={(e) => setVoterPhone(e.target.value)}
-                      className="input-gold"
-                      style={{
-                        ...inputStyle,
-                        borderColor: operator === 'cm.mtn'
-                          ? 'rgba(234, 179, 8, 0.4)'
-                          : operator === 'cm.orange'
-                            ? 'rgba(249, 115, 22, 0.4)'
-                            : undefined,
-                      }}
-                      required
-                    />
+                    <div className="flex" style={{ gap: s(2) }}>
+                      <select
+                        value={selectedCountry.code}
+                        onChange={(e) => {
+                          const country = SUPPORTED_COUNTRIES.find(c => c.code === e.target.value);
+                          if (country) setSelectedCountry(country);
+                        }}
+                        className="input-gold"
+                        style={{
+                          ...inputStyle,
+                          width: '110px',
+                          padding: `0 ${s(3)}`,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {SUPPORTED_COUNTRIES.map(c => (
+                          <option key={c.code} value={c.code} style={{ background: '#0f0f1a', color: '#fff' }}>
+                            {c.flag} {c.dialCode}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="tel"
+                        placeholder={selectedCountry.code === 'CM' ? "6XX XX XX XX" : "Numéro de téléphone"}
+                        value={localPhone}
+                        onChange={(e) => setLocalPhone(e.target.value)}
+                        className="input-gold"
+                        style={{
+                          ...inputStyle,
+                          flex: 1,
+                          borderColor: operator === 'cm.mtn'
+                            ? 'rgba(234, 179, 8, 0.4)'
+                            : operator === 'cm.orange'
+                              ? 'rgba(249, 115, 22, 0.4)'
+                              : undefined,
+                        }}
+                        required
+                      />
+                    </div>
                   </div>
 
                   {/* Montants prédéfinis */}
@@ -351,7 +407,7 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                   {/* Payment info */}
                   <div className="flex text-xs text-white/40 items-center" style={{ gap: s(2) }}>
                     <Smartphone className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Mobile Money MTN/Orange</span>
+                    <span>Mobile Money (Cameroun & International)</span>
                   </div>
 
                   {/* Submit */}
