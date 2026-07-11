@@ -94,6 +94,10 @@ export default function CandidateProfilePage() {
     );
   }
 
+  const juryTotal = (candidate.jury_ecriture || 0) + (candidate.jury_technique || 0) + (candidate.jury_attitude || 0) + (candidate.jury_originalite || 0);
+  const socialTotal = (candidate.social_likes || 0) + ((candidate.social_comments || 0) * 2) + ((candidate.social_shares || 0) * 5);
+  const noteTotale = juryTotal + socialTotal + (candidate.total_points || 0);
+
   const socials = [
     {
       url: candidate.instagram_url,
@@ -333,7 +337,7 @@ export default function CandidateProfilePage() {
                   className="text-xs text-white/40 uppercase tracking-wider"
                   style={{ marginBottom: s(1) }}
                 >
-                  Score total
+                  Note totale
                 </p>
 
                 <p
@@ -342,15 +346,55 @@ export default function CandidateProfilePage() {
                     fontFamily: 'var(--font-outfit)',
                   }}
                 >
-                  {formatPoints(candidate.total_points)}
+                  {formatPoints(noteTotale)}
                 </p>
 
                 <p
                   className="text-white/40 text-sm"
                   style={{ marginTop: s(1) }}
                 >
-                  {candidate.vote_count.toLocaleString('fr-FR')} votes
+                  {candidate.vote_count.toLocaleString('fr-FR')} votes payants
                 </p>
+              </div>
+            </div>
+
+            {/* SCORE BREAKDOWN */}
+            <div
+              className="border-t"
+              style={{
+                borderColor: 'rgba(255,255,255,0.06)',
+                marginTop: s(6),
+                paddingTop: s(6),
+              }}
+            >
+              <h2
+                className="text-sm font-semibold text-amber-400 uppercase tracking-widest"
+                style={{ marginBottom: s(4) }}
+              >
+                Détails de l'évaluation
+              </h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: s(4) }}>
+                <div className="p-4! rounded-xl bg-white/5 border border-white/10">
+                  <p className="text-xs text-white/40 uppercase tracking-wider mb-1">Jury</p>
+                  <p className="text-xl font-bold text-white">{juryTotal.toFixed(2)} <span className="text-sm text-white/40">/ 50</span></p>
+                </div>
+
+                <div className="p-4! rounded-xl bg-blue-500/10 border border-blue-500/20">
+                  <p className="text-xs text-blue-400/60 uppercase tracking-wider mb-1">Réseaux Sociaux</p>
+                  <p className="text-xl font-bold text-blue-400">{socialTotal} <span className="text-sm text-blue-400/40">pts</span></p>
+                  <div className="mt-2 space-y-1">
+                    <p className="text-xs text-white/50 flex justify-between"><span>Likes :</span> <span className="text-white">{candidate.social_likes || 0} ({candidate.social_likes || 0} pts)</span></p>
+                    <p className="text-xs text-white/50 flex justify-between"><span>Commentaires :</span> <span className="text-white">{candidate.social_comments || 0} ({(candidate.social_comments || 0) * 2} pts)</span></p>
+                    <p className="text-xs text-white/50 flex justify-between"><span>Partages :</span> <span className="text-white">{candidate.social_shares || 0} ({(candidate.social_shares || 0) * 5} pts)</span></p>
+                  </div>
+                </div>
+
+                <div className="p-4! rounded-xl bg-amber-400/10 border border-amber-400/20">
+                  <p className="text-xs text-amber-400/60 uppercase tracking-wider mb-1">Votes du Public</p>
+                  <p className="text-xl font-bold text-amber-400">{candidate.total_points || 0} <span className="text-sm text-amber-400/40">pts</span></p>
+                  <p className="text-xs text-white/50 mt-2">Votes payants sur le site officiel</p>
+                </div>
               </div>
             </div>
 

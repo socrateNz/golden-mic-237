@@ -21,6 +21,13 @@ export interface Candidate {
   is_trending: boolean;
   rank: number | null;
   created_at: string;
+  jury_ecriture?: number;
+  jury_technique?: number;
+  jury_attitude?: number;
+  jury_originalite?: number;
+  social_likes?: number;
+  social_comments?: number;
+  social_shares?: number;
   categories?: { name: string; slug: string } | null;
 }
 

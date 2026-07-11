@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Trophy, Flame, Music2, Zap } from 'lucide-react';
 import type { Candidate } from '@/types';
-import { formatPoints } from '@/lib/utils';
+import { formatPoints, calculateTotalNote } from '@/lib/utils';
 import { s } from '@/lib/spacing';
 
 interface CandidateCardProps {
@@ -17,6 +17,7 @@ interface CandidateCardProps {
 export default function CandidateCard({ candidate, rank, index = 0 }: CandidateCardProps) {
   const displayRank = rank ?? candidate.rank ?? index + 1;
   const isTop3 = displayRank <= 3;
+  const noteTotale = calculateTotalNote(candidate);
 
   console.log(candidate.photo_url);
   
@@ -312,7 +313,7 @@ export default function CandidateCard({ candidate, rank, index = 0 }: CandidateC
                   backgroundClip: 'text',
                 }}
               >
-                {formatPoints(candidate.total_points)}
+                {formatPoints(noteTotale)}
               </p>
             </div>
 
@@ -362,7 +363,7 @@ export default function CandidateCard({ candidate, rank, index = 0 }: CandidateC
                 boxShadow: '0 0 10px rgba(245,158,11,0.5)',
               }}
               initial={{ width: 0 }}
-              animate={{ width: `${Math.min(100, (candidate.total_points / 10000) * 100)}%` }}
+              animate={{ width: `${Math.min(100, (noteTotale / 10000) * 100)}%` }}
               transition={{ duration: 1.2, ease: 'easeOut', delay: index * 0.06 + 0.3 }}
             />
           </div>

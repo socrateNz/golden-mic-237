@@ -9,6 +9,13 @@ export function formatPoints(points: number): string {
   return `${new Intl.NumberFormat('fr-FR').format(points)} pts`;
 }
 
+export function calculateTotalNote(candidate: any): number {
+  if (!candidate) return 0;
+  const juryTotal = (candidate.jury_ecriture || 0) + (candidate.jury_technique || 0) + (candidate.jury_attitude || 0) + (candidate.jury_originalite || 0);
+  const socialTotal = (candidate.social_likes || 0) + ((candidate.social_comments || 0) * 2) + ((candidate.social_shares || 0) * 5);
+  return juryTotal + socialTotal + (candidate.total_points || 0);
+}
+
 export function formatFCFA(amount: number): string {
   return new Intl.NumberFormat('fr-CM', {
     style: 'currency',

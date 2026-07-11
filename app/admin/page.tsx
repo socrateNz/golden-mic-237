@@ -5,8 +5,8 @@ import { motion } from 'framer-motion';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, setAdminToken } from '@/lib/api';
 import { useAdminStore } from '@/store';
-import { CheckCircle2, XCircle, PauseCircle, Users, TrendingUp, DollarSign, AlertTriangle, LogOut, Loader2, Eye, Pencil, Trash2 } from 'lucide-react';
-import { formatPoints, formatFCFA } from '@/lib/utils';
+import { CheckCircle2, XCircle, PauseCircle, Users, TrendingUp, DollarSign, AlertTriangle, LogOut, Loader2, Eye, Pencil, Trash2, Star } from 'lucide-react';
+import { formatPoints, formatFCFA, calculateTotalNote } from '@/lib/utils';
 import { toast } from 'sonner';
 import { s } from '@/lib/spacing';
 import Link from 'next/link';
@@ -14,6 +14,7 @@ import LoadingButton from '@/components/LoadingButton';
 import RegisterCandidateModal from '@/components/admin/RegisterCandidateModal';
 import EditCandidateModal from '@/components/admin/EditCandidateModal';
 import ViewCandidateModal from '@/components/admin/ViewCandidateModal';
+import RateCandidateModal from '@/components/admin/RateCandidateModal';
 import ConfirmDeleteModal from '@/components/admin/ConfirmDeleteModal';
 
 export default function AdminDashboardPage() {
@@ -22,6 +23,7 @@ export default function AdminDashboardPage() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isViewOpen, setIsViewOpen] = useState(false);
+  const [isRateOpen, setIsRateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [candidateToDelete, setCandidateToDelete] = useState<any | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<any | null>(null);
@@ -199,7 +201,7 @@ export default function AdminDashboardPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                    {['Artiste', 'Région', 'Points', 'Statut', 'Actions'].map((h) => (
+                    {['Artiste', 'Région', 'Note Totale', 'Statut', 'Actions'].map((h) => (
                       <th
                         key={h}
                         className="text-left text-xs text-white/30 uppercase tracking-wider"
@@ -218,7 +220,7 @@ export default function AdminDashboardPage() {
                         <p className="text-white/40 text-xs">{c.full_name}</p>
                       </td>
                       <td className="text-white/60" style={{ paddingLeft: s(5), paddingRight: s(5), paddingTop: s(4), paddingBottom: s(4) }}>{c.region}</td>
-                      <td className="font-bold text-amber-400" style={{ paddingLeft: s(5), paddingRight: s(5), paddingTop: s(4), paddingBottom: s(4) }}>{formatPoints(c.total_points)}</td>
+                      <td className="font-bold text-amber-400" style={{ paddingLeft: s(5), paddingRight: s(5), paddingTop: s(4), paddingBottom: s(4) }}>{formatPoints(calculateTotalNote(c))}</td>
                       <td style={{ paddingLeft: s(5), paddingRight: s(5), paddingTop: s(4), paddingBottom: s(4) }}>
                         <span className="text-xs font-semibold" style={{
                           paddingLeft: s(2),
@@ -241,8 +243,15 @@ export default function AdminDashboardPage() {
                           >
                             <Eye className="w-4 h-4" />
                           </button>
-                          <button onClick={() => { setSelectedCandidate(c); setIsEditOpen(true); }}
+                          <button onClick={() => { setSelectedCandidate(c); setIsRateOpen(true); }}
                             className="rounded-lg text-amber-400 hover:bg-amber-400/10 transition-colors"
+                            style={{ padding: s(1.5) }}
+                            title="Noter"
+                          >
+                            <Star className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => { setSelectedCandidate(c); setIsEditOpen(true); }}
+                            className="rounded-lg text-blue-400 hover:bg-blue-400/10 transition-colors"
                             style={{ padding: s(1.5) }}
                             title="Modifier"
                           >
@@ -362,6 +371,13 @@ export default function AdminDashboardPage() {
         isOpen={isViewOpen}
         onClose={() => { setIsViewOpen(false); setSelectedCandidate(null); }}
         candidate={selectedCandidate}
+      />
+
+      <RateCandidateModal
+        isOpen={isRateOpen}
+        onClose={() => { setIsRateOpen(false); setSelectedCandidate(null); }}
+        candidate={selectedCandidate}
+        adminToken={adminToken!}
       />
 
       <ConfirmDeleteModal
