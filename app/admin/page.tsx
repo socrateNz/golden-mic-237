@@ -16,7 +16,7 @@ import EditCandidateModal from '@/components/admin/EditCandidateModal';
 import ViewCandidateModal from '@/components/admin/ViewCandidateModal';
 import RateCandidateModal from '@/components/admin/RateCandidateModal';
 import ConfirmDeleteModal from '@/components/admin/ConfirmDeleteModal';
-
+import PhaseManagerModal from '@/components/admin/PhaseManagerModal';
 export default function AdminDashboardPage() {
   const { adminToken, isAdmin, setAdminToken: storeToken, logout } = useAdminStore();
   const [loginKey, setLoginKey] = useState('');
@@ -25,6 +25,7 @@ export default function AdminDashboardPage() {
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isRateOpen, setIsRateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isPhaseManagerOpen, setIsPhaseManagerOpen] = useState(false);
   const [candidateToDelete, setCandidateToDelete] = useState<any | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<any | null>(null);
   const qc = useQueryClient();
@@ -57,6 +58,17 @@ export default function AdminDashboardPage() {
         headers: { 'x-admin-token': adminToken! },
       });
       return data.data;
+    },
+    enabled: isAdmin && !!adminToken,
+  });
+
+  const { data: currentPhase } = useQuery({
+    queryKey: ['current-phase'],
+    queryFn: async () => {
+      const { data } = await api.get('/api/admin/phases/current', {
+        headers: { 'x-admin-token': adminToken! },
+      });
+      return data.currentPhase;
     },
     enabled: isAdmin && !!adminToken,
   });
@@ -183,13 +195,22 @@ export default function AdminDashboardPage() {
           >
             <div className="flex items-center" style={{ gap: s(4) }}>
               <h2 className="font-bold text-lg" style={{ fontFamily: 'var(--font-outfit)' }}>Gestion des candidats</h2>
-              <button
-                onClick={() => setIsRegisterOpen(true)}
-                className="btn-gold flex items-center text-xs font-semibold"
-                style={{ padding: `${s(1.5)} ${s(3)}`, borderRadius: s(2), gap: s(1.5) }}
-              >
-                Inscrire un candidat
-              </button>
+              <div className="flex items-center" style={{ gap: s(2) }}>
+                <button
+                  onClick={() => setIsPhaseManagerOpen(true)}
+                  className="btn-gold flex items-center text-xs font-semibold"
+                  style={{ padding: `${s(1.5)} ${s(3)}`, borderRadius: s(2), gap: s(1.5), background: 'linear-gradient(to right, #4f46e5, #7c3aed)' }}
+                >
+                  Gérer la phase
+                </button>
+                <button
+                  onClick={() => setIsRegisterOpen(true)}
+                  className="btn-gold flex items-center text-xs font-semibold"
+                  style={{ padding: `${s(1.5)} ${s(3)}`, borderRadius: s(2), gap: s(1.5) }}
+                >
+                  Inscrire un candidat
+                </button>
+              </div>
             </div>
             {(updating || deleting) && <Loader2 className="w-5 h-5 animate-spin text-amber-400" />}
           </div>
@@ -228,10 +249,10 @@ export default function AdminDashboardPage() {
                           paddingTop: s(1),
                           paddingBottom: s(1),
                           borderRadius: '999px',
-                          background: c.status === 'approved' ? 'rgba(34,197,94,0.15)' : c.status === 'pending' ? 'rgba(245,158,11,0.15)' : 'rgba(239,68,68,0.15)',
-                          color: c.status === 'approved' ? '#22c55e' : c.status === 'pending' ? '#f59e0b' : '#ef4444',
+                          background: c.is_eliminated ? 'rgba(107,114,128,0.15)' : c.status === 'approved' ? 'rgba(34,197,94,0.15)' : c.status === 'pending' ? 'rgba(245,158,11,0.15)' : 'rgba(239,68,68,0.15)',
+                          color: c.is_eliminated ? '#9ca3af' : c.status === 'approved' ? '#22c55e' : c.status === 'pending' ? '#f59e0b' : '#ef4444',
                         }}>
-                          {c.status}
+                          {c.is_eliminated ? 'Éliminé' : c.status}
                         </span>
                       </td>
                       <td style={{ paddingLeft: s(5), paddingRight: s(5), paddingTop: s(4), paddingBottom: s(4) }}>
@@ -386,6 +407,13 @@ export default function AdminDashboardPage() {
         onConfirm={() => { if (candidateToDelete) deleteCandidate(candidateToDelete.id); }}
         isDeleting={deleting}
         candidateName={candidateToDelete?.artist_name}
+      />
+
+      <PhaseManagerModal
+        isOpen={isPhaseManagerOpen}
+        onClose={() => setIsPhaseManagerOpen(false)}
+        adminToken={adminToken!}
+        currentPhaseName={currentPhase?.name}
       />
     </div>
   );

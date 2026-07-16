@@ -47,6 +47,10 @@ export default function EditCandidateModal({ candidate, isOpen, onClose, adminTo
       toast.success('Profil du candidat mis à jour !');
       queryClient.invalidateQueries({ queryKey: ['admin-candidates'] });
       queryClient.invalidateQueries({ queryKey: ['admin-analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['candidates'] });
+      if (candidate?.id) {
+        queryClient.invalidateQueries({ queryKey: ['candidate', candidate.id] });
+      }
       onClose();
     },
     onError: (err: Error) => toast.error(err.message),

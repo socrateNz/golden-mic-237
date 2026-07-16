@@ -55,6 +55,10 @@ export default function RateCandidateModal({ candidate, isOpen, onClose, adminTo
       toast.success('Notes et statistiques mises à jour !');
       queryClient.invalidateQueries({ queryKey: ['admin-candidates'] });
       queryClient.invalidateQueries({ queryKey: ['admin-analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['candidates'] });
+      if (candidate?.id) {
+        queryClient.invalidateQueries({ queryKey: ['candidate', candidate.id] });
+      }
       onClose();
     },
     onError: (err: Error) => toast.error(err.message),

@@ -15,28 +15,13 @@ import { detectPaymentMethod } from '@/lib/notchpay';
 
 const SUPPORTED_COUNTRIES = [
   { code: 'CM', dialCode: '+237', name: 'Cameroun', flag: '🇨🇲' },
-  { code: 'BJ', dialCode: '+229', name: 'Bénin', flag: '🇧🇯' },
-  { code: 'BF', dialCode: '+226', name: 'Burkina Faso', flag: '🇧🇫' },
-  { code: 'BI', dialCode: '+257', name: 'Burundi', flag: '🇧🇮' },
-  { code: 'CI', dialCode: '+225', name: 'Côte d\'Ivoire', flag: '🇨🇮' },
-  { code: 'CG', dialCode: '+242', name: 'Congo', flag: '🇨🇬' },
   { code: 'GA', dialCode: '+241', name: 'Gabon', flag: '🇬🇦' },
-  { code: 'GH', dialCode: '+233', name: 'Ghana', flag: '🇬🇭' },
-  { code: 'GN', dialCode: '+224', name: 'Guinée', flag: '🇬🇳' },
-  { code: 'GQ', dialCode: '+240', name: 'Guinée équat.', flag: '🇬🇶' },
-  { code: 'KE', dialCode: '+254', name: 'Kenya', flag: '🇰🇪' },
-  { code: 'MG', dialCode: '+261', name: 'Madagascar', flag: '🇲🇬' },
-  { code: 'ML', dialCode: '+223', name: 'Mali', flag: '🇲🇱' },
-  { code: 'NE', dialCode: '+227', name: 'Niger', flag: '🇳🇪' },
-  { code: 'NG', dialCode: '+234', name: 'Nigeria', flag: '🇳🇬' },
-  { code: 'UG', dialCode: '+256', name: 'Ouganda', flag: '🇺🇬' },
-  { code: 'CF', dialCode: '+236', name: 'RCA', flag: '🇨🇫' },
-  { code: 'CD', dialCode: '+243', name: 'RDC', flag: '🇨🇩' },
-  { code: 'RW', dialCode: '+250', name: 'Rwanda', flag: '🇷🇼' },
+  { code: 'CI', dialCode: '+225', name: 'Côte d\'Ivoire', flag: '🇨🇮' },
   { code: 'SN', dialCode: '+221', name: 'Sénégal', flag: '🇸🇳' },
-  { code: 'TZ', dialCode: '+255', name: 'Tanzanie', flag: '🇹🇿' },
-  { code: 'TD', dialCode: '+235', name: 'Tchad', flag: '🇹🇩' },
-  { code: 'TG', dialCode: '+228', name: 'Togo', flag: '🇹🇬' },
+  { code: 'NG', dialCode: '+234', name: 'Nigeria', flag: '🇳🇬' },
+  { code: 'GH', dialCode: '+233', name: 'Ghana', flag: '🇬🇭' },
+  { code: 'KE', dialCode: '+254', name: 'Kenya', flag: '🇰🇪' },
+  { code: 'UG', dialCode: '+256', name: 'Ouganda', flag: '🇺🇬' },
 ];
 
 interface VoteModalProps {

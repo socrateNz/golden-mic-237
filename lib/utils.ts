@@ -12,9 +12,19 @@ export function formatPoints(points: number): string {
 export function calculateTotalNote(candidate: any): number {
   if (!candidate) return 0;
   if (candidate.note_totale !== undefined && candidate.note_totale !== null) return Number(candidate.note_totale);
-  const juryTotal = (candidate.jury_ecriture || 0) + (candidate.jury_technique || 0) + (candidate.jury_attitude || 0) + (candidate.jury_originalite || 0);
-  const socialTotal = (candidate.social_likes || 0) + ((candidate.social_comments || 0) * 2) + ((candidate.social_shares || 0) * 5);
-  return juryTotal + socialTotal + (candidate.total_points || 0);
+  
+  // Si note_totale n'est pas fourni, on le recalcule basé sur les colonnes de la phase courante
+  const juryTotal = (candidate.phase_jury_ecriture || 0) + (candidate.phase_jury_technique || 0) + (candidate.phase_jury_attitude || 0) + (candidate.phase_jury_originalite || 0);
+  const socialTotal = (candidate.phase_social_likes || 0) + ((candidate.phase_social_comments || 0) * 2) + ((candidate.phase_social_shares || 0) * 5);
+  
+  // S'il n'a pas les colonnes phase_ (ex: ancienne donnée), on fallback sur les globales pour la rétrocompatibilité
+  if (candidate.phase_vote_points === undefined) {
+    const oldJuryTotal = (candidate.jury_ecriture || 0) + (candidate.jury_technique || 0) + (candidate.jury_attitude || 0) + (candidate.jury_originalite || 0);
+    const oldSocialTotal = (candidate.social_likes || 0) + ((candidate.social_comments || 0) * 2) + ((candidate.social_shares || 0) * 5);
+    return oldJuryTotal + oldSocialTotal + (candidate.total_points || 0);
+  }
+
+  return juryTotal + socialTotal + (candidate.phase_vote_points || 0);
 }
 
 export function formatFCFA(amount: number): string {
