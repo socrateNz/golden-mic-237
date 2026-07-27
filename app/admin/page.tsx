@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, setAdminToken } from '@/lib/api';
 import { useAdminStore } from '@/store';
-import { CheckCircle2, XCircle, PauseCircle, Users, TrendingUp, DollarSign, AlertTriangle, LogOut, Loader2, Eye, Pencil, Trash2, Star } from 'lucide-react';
+import { CheckCircle2, XCircle, PauseCircle, Users, TrendingUp, DollarSign, AlertTriangle, LogOut, Loader2, Eye, Pencil, Trash2, Star, History } from 'lucide-react';
 import { formatPoints, formatFCFA, calculateTotalNote } from '@/lib/utils';
 import { toast } from 'sonner';
 import { s } from '@/lib/spacing';
@@ -17,6 +17,7 @@ import ViewCandidateModal from '@/components/admin/ViewCandidateModal';
 import RateCandidateModal from '@/components/admin/RateCandidateModal';
 import ConfirmDeleteModal from '@/components/admin/ConfirmDeleteModal';
 import PhaseManagerModal from '@/components/admin/PhaseManagerModal';
+import CandidateHistoryModal from '@/components/admin/CandidateHistoryModal';
 export default function AdminDashboardPage() {
   const { adminToken, isAdmin, setAdminToken: storeToken, logout } = useAdminStore();
   const [loginKey, setLoginKey] = useState('');
@@ -26,6 +27,7 @@ export default function AdminDashboardPage() {
   const [isRateOpen, setIsRateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isPhaseManagerOpen, setIsPhaseManagerOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [candidateToDelete, setCandidateToDelete] = useState<any | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<any | null>(null);
   const qc = useQueryClient();
@@ -271,6 +273,13 @@ export default function AdminDashboardPage() {
                           >
                             <Star className="w-4 h-4" />
                           </button>
+                          <button onClick={() => { setSelectedCandidate(c); setIsHistoryOpen(true); }}
+                            className="rounded-lg text-purple-400 hover:bg-purple-400/10 transition-colors"
+                            style={{ padding: s(1.5) }}
+                            title="Historique des phases"
+                          >
+                            <History className="w-4 h-4" />
+                          </button>
                           <button onClick={() => { setSelectedCandidate(c); setIsEditOpen(true); }}
                             className="rounded-lg text-blue-400 hover:bg-blue-400/10 transition-colors"
                             style={{ padding: s(1.5) }}
@@ -414,6 +423,13 @@ export default function AdminDashboardPage() {
         onClose={() => setIsPhaseManagerOpen(false)}
         adminToken={adminToken!}
         currentPhaseName={currentPhase?.name}
+      />
+
+      <CandidateHistoryModal
+        isOpen={isHistoryOpen}
+        onClose={() => { setIsHistoryOpen(false); setSelectedCandidate(null); }}
+        candidate={selectedCandidate}
+        adminToken={adminToken!}
       />
     </div>
   );
