@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Phone, Mail, MapPin, Tag, Calendar, Music, Video, Award, Star } from 'lucide-react';
 import { s } from '@/lib/spacing';
-import { formatPoints } from '@/lib/utils';
+import { formatPoints, calculateTotalNote } from '@/lib/utils';
 import { type Candidate } from '@/types';
 
 interface ViewCandidateModalProps {
@@ -121,7 +121,7 @@ export default function ViewCandidateModal({ candidate, isOpen, onClose }: ViewC
                     <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4" style={{ marginTop: s(3) }}>
                       <div className="flex items-center text-amber-400 font-bold" style={{ gap: s(1.5) }}>
                         <Award className="w-4 h-4" />
-                        <span className="text-sm">{formatPoints(candidate.total_points)} points</span>
+                        <span className="text-sm">{formatPoints(calculateTotalNote(candidate))}</span>
                       </div>
                       <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
                       <div className="text-white/50 text-sm">

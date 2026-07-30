@@ -16,7 +16,7 @@ import {
 
 import { useCandidate } from '@/hooks/useCandidates';
 import VoteModal from '@/components/vote/VoteModal';
-import { formatPoints, getWhatsAppShareUrl } from '@/lib/utils';
+import { formatPoints, getWhatsAppShareUrl, calculateTotalNote } from '@/lib/utils';
 import { s } from '@/lib/spacing';
 
 export default function CandidateProfilePage() {
@@ -94,9 +94,20 @@ export default function CandidateProfilePage() {
     );
   }
 
-  const juryTotal = (candidate.jury_ecriture || 0) + (candidate.jury_technique || 0) + (candidate.jury_attitude || 0) + (candidate.jury_originalite || 0);
-  const socialTotal = (candidate.social_likes || 0) + ((candidate.social_comments || 0) * 2) + ((candidate.social_shares || 0) * 5);
-  const noteTotale = juryTotal + socialTotal + (candidate.total_points || 0);
+  const juryEcriture = candidate.phase_jury_ecriture ?? candidate.jury_ecriture ?? 0;
+  const juryTechnique = candidate.phase_jury_technique ?? candidate.jury_technique ?? 0;
+  const juryAttitude = candidate.phase_jury_attitude ?? candidate.jury_attitude ?? 0;
+  const juryOriginalite = candidate.phase_jury_originalite ?? candidate.jury_originalite ?? 0;
+  const juryTotal = juryEcriture + juryTechnique + juryAttitude + juryOriginalite;
+
+  const socialLikes = candidate.phase_social_likes ?? candidate.social_likes ?? 0;
+  const socialComments = candidate.phase_social_comments ?? candidate.social_comments ?? 0;
+  const socialShares = candidate.phase_social_shares ?? candidate.social_shares ?? 0;
+  const socialTotal = socialLikes + (socialComments * 2) + (socialShares * 5);
+
+  const publicVotePoints = candidate.phase_vote_points ?? candidate.total_points ?? 0;
+
+  const noteTotale = calculateTotalNote(candidate);
 
   const socials = [
     {
@@ -384,15 +395,15 @@ export default function CandidateProfilePage() {
                   <p className="text-xs text-blue-400/60 uppercase tracking-wider mb-1">Réseaux Sociaux</p>
                   <p className="text-xl font-bold text-blue-400">{socialTotal} <span className="text-sm text-blue-400/40">pts</span></p>
                   <div className="mt-2 space-y-1">
-                    <p className="text-xs text-white/50 flex justify-between"><span>Likes :</span> <span className="text-white">{candidate.social_likes || 0} ({candidate.social_likes || 0} pts)</span></p>
-                    <p className="text-xs text-white/50 flex justify-between"><span>Commentaires :</span> <span className="text-white">{candidate.social_comments || 0} ({(candidate.social_comments || 0) * 2} pts)</span></p>
-                    <p className="text-xs text-white/50 flex justify-between"><span>Partages :</span> <span className="text-white">{candidate.social_shares || 0} ({(candidate.social_shares || 0) * 5} pts)</span></p>
+                    <p className="text-xs text-white/50 flex justify-between"><span>Likes :</span> <span className="text-white">{socialLikes} ({socialLikes} pts)</span></p>
+                    <p className="text-xs text-white/50 flex justify-between"><span>Commentaires :</span> <span className="text-white">{socialComments} ({socialComments * 2} pts)</span></p>
+                    <p className="text-xs text-white/50 flex justify-between"><span>Partages :</span> <span className="text-white">{socialShares} ({socialShares * 5} pts)</span></p>
                   </div>
                 </div>
 
                 <div className="p-4! rounded-xl bg-amber-400/10 border border-amber-400/20">
                   <p className="text-xs text-amber-400/60 uppercase tracking-wider mb-1">Votes du Public</p>
-                  <p className="text-xl font-bold text-amber-400">{candidate.total_points || 0} <span className="text-sm text-amber-400/40">pts</span></p>
+                  <p className="text-xl font-bold text-amber-400">{publicVotePoints} <span className="text-sm text-amber-400/40">pts</span></p>
                   <p className="text-xs text-white/50 mt-2">Votes payants sur le site officiel</p>
                 </div>
               </div>

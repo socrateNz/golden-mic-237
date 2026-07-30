@@ -29,6 +29,14 @@ export interface Candidate {
   social_likes?: number;
   social_comments?: number;
   social_shares?: number;
+  phase_vote_points?: number;
+  phase_jury_ecriture?: number;
+  phase_jury_technique?: number;
+  phase_jury_attitude?: number;
+  phase_jury_originalite?: number;
+  phase_social_likes?: number;
+  phase_social_comments?: number;
+  phase_social_shares?: number;
   categories?: { name: string; slug: string } | null;
 }
 
