@@ -7,7 +7,7 @@ import type { VoteInitiatePayload, VoteInitiateResponse, ApiResponse } from '@/t
 export function useInitiateVote() {
   return useMutation({
     mutationFn: async (payload: VoteInitiatePayload): Promise<VoteInitiateResponse> => {
-      // NotchPay + DB peuvent dépasser 15 s (timeout global axios) : sans délai dédié, la requête est annulée côté navigateur alors que le backend répond encore 200.
+      // MoneyFusion + DB peuvent dépasser 15 s (timeout global axios) : sans délai dédié, la requête est annulée côté navigateur alors que le backend répond encore 200.
       const { data } = await api.post<ApiResponse<VoteInitiateResponse>>(
         '/api/votes/initiate',
         payload,

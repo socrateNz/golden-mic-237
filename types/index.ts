@@ -88,9 +88,6 @@ export interface VoteInitiateResponse {
   transactionId: string;
   reference: string;
   paymentUrl?: string;
-  checkoutUrl?: string;
-  action?: string;
-  ussdMessage?: string;
 }
 
 export interface Sponsor {

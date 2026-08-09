@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, CreditCard, Smartphone, CheckCircle2, AlertCircle, XCircle } from 'lucide-react';
+import { X, CreditCard, Smartphone, CheckCircle2, XCircle } from 'lucide-react';
 import { useInitiateVote } from '@/hooks/useVote';
 import { VOTE_AMOUNTS, type Candidate, type VoteInitiateResponse } from '@/types';
 import { formatFCFA } from '@/lib/utils';
@@ -11,7 +11,6 @@ import { s } from '@/lib/spacing';
 import LoadingButton from '@/components/LoadingButton';
 import { useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-import { detectPaymentMethod } from '@/lib/notchpay';
 
 const SUPPORTED_COUNTRIES = [
   { code: 'CM', dialCode: '+237', name: 'Cameroun', flag: '🇨🇲' },
@@ -40,14 +39,8 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
   const voterPhone = localPhone ? `${selectedCountry.dialCode}${localPhone.replace(/\D/g, '')}` : '';
   const [paymentData, setPaymentData] = useState<VoteInitiateResponse | null>(null);
   const [paymentFrameLoaded, setPaymentFrameLoaded] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'checking' | 'complete' | 'failed'>('pending');
+  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'complete' | 'failed'>('pending');
   const [statusCheckTimeout, setStatusCheckTimeout] = useState<NodeJS.Timeout | null>(null);
-  const [operator, setOperator] = useState<'cm.mtn' | 'cm.orange' | null>(null);
-
-  useEffect(() => {
-    const { channel } = detectPaymentMethod(voterPhone);
-    setOperator(channel);
-  }, [voterPhone]);
 
   const queryClient = useQueryClient();
 
@@ -56,7 +49,7 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
   const effectiveAmount = selectedAmount ?? (customAmount ? parseInt(customAmount) : null);
   const points = effectiveAmount ? Math.floor(effectiveAmount / 10) : 0;
   const inputStyle: React.CSSProperties = { padding: `${s(3)} ${s(4)}`, borderRadius: s(2.5) };
-  const paymentUrl = paymentData?.paymentUrl ?? paymentData?.checkoutUrl ?? null;
+  const paymentUrl = paymentData?.paymentUrl ?? null;
   const currentStep = paymentData ? 2 : 1;
 
   // Nettoyage à la fermeture
@@ -82,9 +75,6 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
     let checkCount = 0;
     const maxChecks = 75; // 5 minutes avec 4s intervalle
 
-    console.log(payment);
-
-
     const checkStatus = async () => {
       try {
         checkCount++;
@@ -93,12 +83,12 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
         if (data.data?.status === 'complete') {
           setPaymentStatus('complete');
           setStatusCheckTimeout(null);
-          
+
           // Rafraîchir les points du candidat et le classement
           queryClient.invalidateQueries({ queryKey: ['candidates'] });
           queryClient.invalidateQueries({ queryKey: ['candidate', candidate.id] });
           queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
-          
+
           toast.success('Paiement confirmé! Vos points ont été attribués.');
 
           // Fermer le modal après 2 secondes
@@ -154,11 +144,7 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
       {
         onSuccess: (data) => {
           setPaymentData(data);
-          if (operator) {
-            setPaymentStatus('checking');
-          } else {
-            setPaymentStatus('pending');
-          }
+          setPaymentStatus('pending');
           startStatusChecking(data);
         },
         onError: (err) => toast.error(err.message ?? 'Erreur lors du vote'),
@@ -203,16 +189,8 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
             className="relative w-full max-w-md rounded-2xl overflow-hidden"
             style={{
               background: 'linear-gradient(135deg, #0f0f1a 0%, #1a0e00 100%)',
-              border: operator === 'cm.mtn'
-                ? '1px solid rgba(234, 179, 8, 0.4)'
-                : operator === 'cm.orange'
-                  ? '1px solid rgba(249, 115, 22, 0.4)'
-                  : '1px solid rgba(245, 158, 11, 0.3)',
-              boxShadow: operator === 'cm.mtn'
-                ? '0 25px 80px rgba(0,0,0,0.8), 0 0 60px rgba(234, 179, 8, 0.15)'
-                : operator === 'cm.orange'
-                  ? '0 25px 80px rgba(0,0,0,0.8), 0 0 60px rgba(249, 115, 22, 0.15)'
-                  : '0 25px 80px rgba(0,0,0,0.6), 0 0 60px rgba(245, 158, 11, 0.1)',
+              border: '1px solid rgba(245, 158, 11, 0.3)',
+              boxShadow: '0 25px 80px rgba(0,0,0,0.6), 0 0 60px rgba(245, 158, 11, 0.1)',
             }}
           >
             {/* Header */}
@@ -242,11 +220,7 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                     className="h-full rounded-full transition-all duration-300"
                     style={{
                       width: currentStep === 1 ? '50%' : '100%',
-                      background: operator === 'cm.mtn'
-                        ? '#eab308'
-                        : operator === 'cm.orange'
-                          ? '#f97316'
-                          : '#f59e0b',
+                      background: '#f59e0b',
                     }}
                   />
                 </div>
@@ -258,31 +232,9 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                 <>
                   {/* Infos du voteur */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: s(2) }}>
-                    <div className="flex justify-between items-center">
-                      <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider">
-                        Votre numéro de téléphone *
-                      </label>
-                      {operator === 'cm.mtn' && (
-                        <motion.span
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          className="text-[10px] font-black px-2 py-0.5 bg-yellow-400 text-black rounded-md flex items-center gap-1 shadow-md"
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-black animate-ping"></span>
-                          MTN MoMo
-                        </motion.span>
-                      )}
-                      {operator === 'cm.orange' && (
-                        <motion.span
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          className="text-[10px] font-black px-2 py-0.5 bg-orange-500 text-white rounded-md flex items-center gap-1 shadow-md"
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
-                          Orange Money
-                        </motion.span>
-                      )}
-                    </div>
+                    <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider">
+                      Votre numéro de téléphone *
+                    </label>
                     <div className="flex" style={{ gap: s(2) }}>
                       <select
                         value={selectedCountry.code}
@@ -310,15 +262,7 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                         value={localPhone}
                         onChange={(e) => setLocalPhone(e.target.value)}
                         className="input-gold"
-                        style={{
-                          ...inputStyle,
-                          flex: 1,
-                          borderColor: operator === 'cm.mtn'
-                            ? 'rgba(234, 179, 8, 0.4)'
-                            : operator === 'cm.orange'
-                              ? 'rgba(249, 115, 22, 0.4)'
-                              : undefined,
-                        }}
+                        style={{ ...inputStyle, flex: 1 }}
                         required
                       />
                     </div>
@@ -402,13 +346,6 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                     loadingText="Initialisation du paiement..."
                     disabled={!effectiveAmount || effectiveAmount < 100 || !voterPhone}
                     className="w-full"
-                    style={
-                      operator === 'cm.mtn'
-                        ? { background: 'linear-gradient(135deg, #facc15, #ca8a04)', color: '#000' }
-                        : operator === 'cm.orange'
-                          ? { background: 'linear-gradient(135deg, #f97316, #ea580c)', color: '#fff' }
-                          : undefined
-                    }
                   >
                     <CheckCircle2 className="w-5 h-5" />
                     Continuer vers paiement {effectiveAmount ? formatFCFA(effectiveAmount) : ''}
@@ -422,109 +359,7 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                     <p className="text-sm text-white/80">
                       Référence: <span className="text-amber-400 font-semibold">{paymentData.reference}</span>
                     </p>
-                    {paymentData.ussdMessage && (
-                      <p className="text-xs text-white/60" style={{ marginTop: s(2) }}>
-                        {paymentData.ussdMessage}
-                      </p>
-                    )}
                   </div>
-
-                  {paymentStatus === 'checking' && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="rounded-xl text-center flex flex-col items-center justify-center gap-4"
-                      style={{
-                        background: operator === 'cm.mtn'
-                          ? 'rgba(234,179,8,0.06)'
-                          : operator === 'cm.orange'
-                            ? 'rgba(249,115,22,0.06)'
-                            : 'rgba(59,130,246,0.06)',
-                        border: operator === 'cm.mtn'
-                          ? '1px solid rgba(234,179,8,0.2)'
-                          : operator === 'cm.orange'
-                            ? '1px solid rgba(249,115,22,0.2)'
-                            : '1px solid rgba(59,130,246,0.2)',
-                        padding: s(6)
-                      }}
-                    >
-                      {/* Pulse Circle Animation */}
-                      <div className="relative flex items-center justify-center w-16 h-16">
-                        <motion.div
-                          animate={{
-                            scale: [1, 1.4, 1],
-                            opacity: [0.6, 0.1, 0.6],
-                          }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }}
-                          className="absolute inset-0 rounded-full"
-                          style={{
-                            background: operator === 'cm.mtn'
-                              ? '#eab308'
-                              : operator === 'cm.orange'
-                                ? '#f97316'
-                                : '#3b82f6'
-                          }}
-                        />
-                        <div
-                          className="relative z-10 w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
-                          style={{
-                            background: operator === 'cm.mtn'
-                              ? '#eab308'
-                              : operator === 'cm.orange'
-                                ? '#f97316'
-                                : '#3b82f6'
-                          }}
-                        >
-                          <Smartphone className={`w-6 h-6 ${operator === 'cm.mtn' ? 'text-black' : 'text-white'}`} />
-                        </div>
-                      </div>
-
-                      <div className="space-y-1">
-                        <h3 className="text-white font-bold text-base" style={{ fontFamily: 'var(--font-outfit)' }}>
-                          {operator === 'cm.mtn' && "Attente de confirmation MTN MoMo"}
-                          {operator === 'cm.orange' && "Attente de confirmation Orange Money"}
-                          {!operator && "Vérification du paiement..."}
-                        </h3>
-                        <p className="text-xs text-white/50">Instruction Push USSD envoyée</p>
-                      </div>
-
-                      <div className="text-xs leading-relaxed text-white/80 max-w-xs space-y-2 border-t border-white/5 pt-4">
-                        <p>
-                          Un popup sécurisé vient de s'afficher sur votre téléphone.
-                          <strong className="text-white block mt-1 font-semibold">
-                            Saisissez votre code PIN pour valider le paiement.
-                          </strong>
-                        </p>
-
-                        <div className="mt-4 p-3 rounded-lg text-[11px] text-left space-y-1" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                          <span className="font-bold text-amber-400 block mb-1">💡 Pas de notification ?</span>
-                          {operator === 'cm.mtn' ? (
-                            <p>Veuillez composer le <span className="font-black text-white text-xs select-all">#150*50#</span> sur votre téléphone pour approuver la transaction manuellement.</p>
-                          ) : operator === 'cm.orange' ? (
-                            <p>Veuillez composer le <span className="font-black text-white text-xs select-all">#150#</span> ou consulter votre application Orange Money pour valider la transaction en attente.</p>
-                          ) : (
-                            <p>Veuillez vérifier votre téléphone ou utiliser le lien ci-dessous pour payer sur le portail sécurisé.</p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Fallback button if user wants to use checkout URL in separate window */}
-                      {paymentUrl && (
-                        <a
-                          href={paymentUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-2 text-[10px] text-white/40 hover:text-amber-400 transition-colors underline"
-                        >
-                          Ouvrir la page de paiement classique dans un nouvel onglet
-                        </a>
-                      )}
-                    </motion.div>
-                  )}
 
                   {paymentStatus === 'complete' && (
                     <motion.div
@@ -560,17 +395,28 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                             <CreditCard className="w-10 h-10 text-amber-400" />
                           </motion.div>
                           <p className="text-sm font-medium text-white/75">Chargement de la page de paiement…</p>
-                          <p className="text-xs text-white/40">NotchPay peut prendre quelques secondes</p>
+                          <p className="text-xs text-white/40">MoneyFusion peut prendre quelques secondes</p>
                         </div>
                       )}
                       <iframe
                         src={paymentUrl}
-                        title="Paiement NotchPay"
+                        title="Paiement MoneyFusion"
                         className="w-full h-full border-0 bg-transparent transition-opacity duration-300"
                         style={{ opacity: paymentFrameLoaded ? 1 : 0 }}
                         onLoad={() => setPaymentFrameLoaded(true)}
                       />
                     </div>
+                  )}
+
+                  {paymentUrl && paymentStatus === 'pending' && (
+                    <a
+                      href={paymentUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-center text-[10px] text-white/40 hover:text-amber-400 transition-colors underline"
+                    >
+                      Ouvrir la page de paiement dans un nouvel onglet
+                    </a>
                   )}
 
                   {paymentStatus === 'failed' && (
@@ -620,7 +466,7 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
               )}
 
               <p className="text-center text-[11px] text-white/30">
-                🔒 Paiement sécurisé via NotchPay • Aucun compte requis
+                🔒 Paiement sécurisé via MoneyFusion • Aucun compte requis
               </p>
             </form>
           </motion.div>
