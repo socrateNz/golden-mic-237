@@ -124,8 +124,8 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!effectiveAmount || effectiveAmount < 100) {
-      toast.error('Montant minimum : 100 FCFA');
+    if (!effectiveAmount || effectiveAmount < 200) {
+      toast.error('Montant minimum : 200 FCFA');
       return;
     }
     if (!voterPhone) {
@@ -304,11 +304,11 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                   {/* Montant libre */}
                   <div>
                     <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider" style={{ marginBottom: s(2) }}>
-                      Ou montant libre (min. 100 FCFA)
+                      Ou montant libre (min. 200 FCFA)
                     </label>
                     <input
                       type="number"
-                      min={100}
+                      min={200}
                       placeholder="Ex: 2500"
                       value={customAmount}
                       onChange={(e) => { setCustomAmount(e.target.value); setSelectedAmount(null); }}
@@ -344,7 +344,7 @@ export default function VoteModal({ candidate, isOpen, onClose }: VoteModalProps
                     type="submit"
                     isLoading={isPending}
                     loadingText="Initialisation du paiement..."
-                    disabled={!effectiveAmount || effectiveAmount < 100 || !voterPhone}
+                    disabled={!effectiveAmount || effectiveAmount < 200 || !voterPhone}
                     className="w-full"
                   >
                     <CheckCircle2 className="w-5 h-5" />

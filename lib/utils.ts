@@ -67,7 +67,7 @@ export function getWhatsAppShareUrl(candidateName: string, id: string): string {
   const url = `${baseUrl}/candidates/${id}`;
   const text = encodeURIComponent(
     `🎤 Votez pour *${candidateName}* sur Golden Mic 237 ! 🇨🇲\n\n` +
-    `Soutenez votre artiste préféré avec seulement 100 FCFA.\n\n${url}`
+    `Soutenez votre artiste préféré avec seulement 200 FCFA.\n\n${url}`
   );
   return `https://wa.me/?text=${text}`;
 }

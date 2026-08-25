@@ -107,4 +107,4 @@ export interface Category {
 
 export const CAMEROON_REGIONS = ['Douala', 'Yaoundé'] as const;
 
-export const VOTE_AMOUNTS = [100, 500, 1000, 2000, 5000, 10000] as const;
+export const VOTE_AMOUNTS = [200, 500, 1000, 2000, 5000, 10000] as const;

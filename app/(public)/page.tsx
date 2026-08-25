@@ -67,7 +67,7 @@ export default function HomePage() {
             style={{ marginBottom: s(12) }}
           >
             La première compétition musicale <span className="text-amber-400">100% digitale</span> au Cameroun.
-            Propulsez votre artiste préféré vers la victoire à partir de <span className="text-amber-400 font-bold">100 FCFA</span>.
+            Propulsez votre artiste préféré vers la victoire à partir de <span className="text-amber-400 font-bold">200 FCFA</span>.
           </motion.p>
 
           {/* Main Actions */}
